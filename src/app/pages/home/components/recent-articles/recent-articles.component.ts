@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Article, FeaturedCategory, Statistics } from '../../../../core/services/encyclopedia.service';
 
 @Component({
   selector: 'app-recent-articles',
@@ -9,34 +10,13 @@ import { CommonModule } from '@angular/common';
   styleUrls: ['./recent-articles.component.scss']
 })
 export class RecentArticlesComponent {
+  // HomeComponent'ten gelen makaleler
+  @Input() articles: Article[] = [];
 
-  recentArticles = [
-    {
-      id: 1,
-      title: 'Osmanlı İmparatorluğu',
-      excerpt: 'Osmanlı İmparatorluğu, 1299-1922 yılları arasında üç kıtaya hükmetmiş büyük imparatorluk.',
-      category: 'Tarih',
-      readTime: '12 dk',
-      date: new Date('2024-01-15')
-    },
-    {
-      id: 2,
-      title: 'Yapay Zeka',
-      excerpt: 'Yapay zeka, makinelerin insan benzeri düşünce ve öğrenme yeteneklerini simüle etmesi.',
-      category: 'Teknoloji',
-      readTime: '8 dk',
-      date: new Date('2024-01-14')
-    },
-    {
-      id: 3,
-      title: 'Quantum Fiziği',
-      excerpt: 'Quantum mekaniği, atom altı parçacıkların davranışlarını açıklayan fizik dalı.',
-      category: 'Bilim',
-      readTime: '15 dk',
-      date: new Date('2024-01-13')
-    }
-  ];
+  // Makale tıklandığında HomeComponent'e event gönder
+  @Output() articleClick = new EventEmitter<string>();
 
-  constructor() { }
-
+  handleArticleClick(articleId: string) {
+    this.articleClick.emit(articleId);
+  }
 }
