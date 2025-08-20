@@ -1,1 +1,13 @@
-<p>statistics-section works!</p>
+<section class="statistics-section">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card" *ngFor="let stat of statistics">
+        <div class="stat-icon">{{ stat.icon }}</div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ stat.value | number }}</h3>
+          <p class="stat-label">{{ stat.label }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,138 +1,95 @@
-<!-- src/app/pages/home/home.component.html -->
-<main class="home-page">
-  <!-- Loading State -->
-  <div *ngIf="isLoading()" class="loading-container">
-    <div class="loading-spinner"></div>
-    <p>Sayfa yükleniyor...</p>
-  </div>
+<div class="home-page">
 
-  <!-- Main Content -->
-  <div *ngIf="!isLoading()">
+  <!-- Hero Section with Search -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h1 class="hero-title">Ansiklopedi SBB</h1>
+        <p class="hero-subtitle">Sakarya Büyükşehir Belediyesi Ansiklopedisi</p>
 
-    <!-- Hero Section -->
-    <app-hero-section
-      [searchQuery]="searchQuery()"
-      (searchQueryChange)="searchQuery.set($event)"
-      (searchSubmit)="onSearch()"
-      class="hero-wrapper">
-    </app-hero-section>
+        <!-- Search Box -->
+        <div class="search-container">
+          <div class="search-box">
+            <input
+              type="text"
+              [(ngModel)]="searchQuery"
+              (input)="onSearchInputChange()"
+              (keyup.enter)="onSearch()"
+              placeholder="Makale, kategori veya yazar ara..."
+              class="search-input">
+            <button
+              (click)="onSearch()"
+              class="search-button"
+              [disabled]="isLoading">
+              <span *ngIf="!isLoading">🔍</span>
+              <span *ngIf="isLoading" class="loading-spinner">⏳</span>
+            </button>
+          </div>
 
-    <!-- Statistics Section -->
-    <section class="statistics-section">
-      <div class="container">
-        <app-statistics-section
-          [statistics]="statistics()">
-        </app-statistics-section>
-      </div>
-    </section>
-
-    <!-- Featured Categories -->
-    <section class="categories-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Ana Kategoriler</h2>
-          <p class="section-subtitle">Sakarya Ansiklopedisi'nde yer alan başlıca konular</p>
-        </div>
-
-        <app-featured-categories
-          [categories]="categories()"
-          (categoryClick)="onCategoryClick($event)">
-        </app-featured-categories>
-      </div>
-    </section>
-
-    <!-- Featured Articles -->
-    <section class="featured-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Öne Çıkan Makaleler</h2>
-          <p class="section-subtitle">En çok okunan ve popüler içerikler</p>
-        </div>
-
-        <div class="featured-grid">
-          <article
-            *ngFor="let article of featuredArticles()"
-            class="featured-card"
-            (click)="onArticleClick(article.id)">
-
-            <div class="card-image">
-              <img
-                [src]="article.imageUrl || '/assets/images/default-article.jpg'"
-                [alt]="article.title"
-                loading="lazy">
-              <div class="card-overlay">
-                <span class="category-badge">{{ article.categoryName }}</span>
-              </div>
+          <!-- Search Results -->
+          <div *ngIf="showSearchResults" class="search-results">
+            <div class="search-results-header">
+              <h3>Arama Sonuçları ({{ searchResults.length }})</h3>
+              <button (click)="clearSearch()" class="close-search">✕</button>
             </div>
-
-            <div class="card-content">
-              <h3 class="card-title">{{ article.title }}</h3>
-              <p class="card-excerpt">{{ article.excerpt }}</p>
-
-              <div class="card-meta">
-                <div class="meta-item">
-                  <i class="icon-user"></i>
-                  <span>{{ article.author }}</span>
-                </div>
-                <div class="meta-item">
-                  <i class="icon-calendar"></i>
-                  <span>{{ article.publishDate | date:'dd.MM.yyyy' }}</span>
-                </div>
-                <div class="meta-item">
-                  <i class="icon-eye"></i>
-                  <span>{{ article.viewCount }}</span>
+            <div *ngIf="searchResults.length === 0" class="no-results">
+              <p>Arama kriterlerinize uygun sonuç bulunamadı.</p>
+            </div>
+            <div *ngIf="searchResults.length > 0" class="results-list">
+              <div
+                *ngFor="let result of searchResults"
+                (click)="onArticleClick(result.id)"
+                class="result-item">
+                <h4>{{ result.title }}</h4>
+                <p>{{ result.excerpt }}</p>
+                <div class="result-meta">
+                  <span class="category">{{ result.categoryName }}</span>
+                  <span class="author">{{ result.author }}</span>
                 </div>
               </div>
             </div>
-          </article>
-        </div>
-
-        <!-- View All Button -->
-        <div class="section-footer">
-          <button
-            class="btn btn-primary btn-large"
-            routerLink="/makaleler">
-            Tüm Makaleleri Gör
-            <i class="icon-arrow-right"></i>
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <!-- Recent Articles -->
-    <section class="recent-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Son Eklenenler</h2>
-          <p class="section-subtitle">Yakın zamanda eklenen yeni içerikler</p>
-        </div>
-
-        <app-recent-articles
-          [articles]="recentArticles()"
-          (articleClick)="onArticleClick($event)">
-        </app-recent-articles>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section">
-      <div class="container">
-        <div class="cta-content">
-          <div class="cta-text">
-            <h2>Sakarya'nın Zengin Tarihini Keşfedin</h2>
-            <p>Şehrimizin kültürel mirası, tarihi ve coğrafi özellikleri hakkında detaylı bilgilere ulaşın.</p>
-          </div>
-          <div class="cta-actions">
-            <button class="btn btn-secondary btn-large" routerLink="/hakkinda">
-              Ansiklopedi Hakkında
-            </button>
-            <button class="btn btn-outline btn-large" routerLink="/iletisim">
-              İletişim
-            </button>
           </div>
         </div>
       </div>
-    </section>
+    </div>
+  </section>
 
+  <!-- Loading Indicator -->
+  <div *ngIf="isDataLoading" class="loading-section">
+    <div class="container">
+      <div class="loading-content">
+        <div class="loading-spinner">⏳</div>
+        <p>Veriler yükleniyor...</p>
+      </div>
+    </div>
   </div>
-</main>
+
+  <!-- Statistics Section -->
+  <app-statistics-section
+    *ngIf="!isDataLoading"
+    [statistics]="statistics">
+  </app-statistics-section>
+
+  <!-- Featured Categories -->
+  <section *ngIf="!isDataLoading" class="section">
+    <div class="container">
+      <h2 class="section-title">Öne Çıkan Kategoriler</h2>
+      <app-featured-categories
+        [categories]="featuredCategories"
+        (categoryClick)="onCategoryClick($event)">
+      </app-featured-categories>
+    </div>
+  </section>
+
+  <!-- Recent Articles -->
+  <section *ngIf="!isDataLoading" class="section">
+    <div class="container">
+      <h2 class="section-title">Son Makaleler</h2>
+      <app-recent-articles
+        [articles]="recentArticles"
+        (articleClick)="onArticleClick($event)">
+      </app-recent-articles>
+    </div>
+  </section>
+
+</div>

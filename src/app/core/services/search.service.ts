@@ -1,52 +1,85 @@
-// src/app/core/services/search.service.ts
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable, firstValueFrom } from 'rxjs';
-
-interface SearchResult {
-  articles: any[];
-  totalCount: number;
-  currentPage: number;
-  totalPages: number;
-}
+import { Observable, of, BehaviorSubject } from 'rxjs';
+import { EncyclopediaService, Article } from './encyclopedia.service';
+import { debounceTime, distinctUntilChanged, switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SearchService {
-  private baseUrl = 'http://localhost:3000';
+  private searchTermSubject = new BehaviorSubject<string>('');
+  private searchResultsSubject = new BehaviorSubject<Article[]>([]);
 
-  constructor(private http: HttpClient) {}
+  public searchTerm$ = this.searchTermSubject.asObservable();
+  public searchResults$ = this.searchResultsSubject.asObservable();
 
-  async searchArticles(query: string, page: number = 1, limit: number = 10): Promise<SearchResult> {
-    try {
-      const response = await firstValueFrom(
-        this.http.get<SearchResult>(`${this.baseUrl}/search`, {
-          params: { q: query, page: page.toString(), limit: limit.toString() }
-        })
-      );
-      return response || this.getMockSearchResults(query);
-    } catch (error) {
-      console.error('Search error:', error);
-      return this.getMockSearchResults(query);
-    }
+  constructor(private encyclopediaService: EncyclopediaService) {
+    // Arama terimini dinle ve debounce uygula
+    this.searchTerm$.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
+      switchMap(term => {
+        if (term.trim().length < 2) {
+          return of([]);
+        }
+        return this.encyclopediaService.searchEntries(term);
+      })
+    ).subscribe(results => {
+      this.searchResultsSubject.next(results);
+    });
   }
 
-  private getMockSearchResults(query: string): SearchResult {
-    return {
-      articles: [
-        {
-          id: '1',
-          title: `${query} ile ilgili sonuçlar`,
-          excerpt: `${query} hakkında detaylı bilgiler...`,
-          author: 'Test Author',
-          categoryName: 'Genel',
-          publishDate: new Date()
-        }
-      ],
-      totalCount: 1,
-      currentPage: 1,
-      totalPages: 1
-    };
+  // Arama terimi güncelle
+  updateSearchTerm(term: string): void {
+    this.searchTermSubject.next(term);
+  }
+
+  // Direkt arama yap
+  searchArticles(query: string): Observable<Article[]> {
+    if (!query.trim() || query.length < 2) {
+      return of([]);
+    }
+
+    return this.encyclopediaService.searchEntries(query);
+  }
+
+  // Arama sonuçlarını temizle
+  clearResults(): void {
+    this.searchTermSubject.next('');
+    this.searchResultsSubject.next([]);
+  }
+
+  // Popüler arama terimlerini döndür (mock data)
+  getPopularSearchTerms(): Observable<string[]> {
+    const popularTerms = [
+      'İzmit Köprüsü',
+      'Sakarya Nehri',
+      'Sapanca Gölü',
+      'Adapazarı Kalesi',
+      'Karasu Plajları',
+      'Taraklı Evleri'
+    ];
+
+    return of(popularTerms);
+  }
+
+  // Öneriler al (başlık ile başlayanlar)
+  getSuggestions(query: string): Observable<string[]> {
+    if (!query.trim() || query.length < 2) {
+      return of([]);
+    }
+
+    return this.encyclopediaService.getAllEntries().pipe(
+      switchMap(entries => {
+        const suggestions = entries
+          .filter(entry =>
+            entry.title.toLowerCase().startsWith(query.toLowerCase())
+          )
+          .map(entry => entry.title)
+          .slice(0, 5); // Maksimum 5 öneri
+
+        return of(suggestions);
+      })
+    );
   }
 }
