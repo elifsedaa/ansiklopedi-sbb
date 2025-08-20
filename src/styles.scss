@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+// src/styles.scss
+@use './styles/variables' as *;
+
+// Global styles buraya
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: $font-family-primary;
+  line-height: 1.6;
+  color: $gray-800;
+}
