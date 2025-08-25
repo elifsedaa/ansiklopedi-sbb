@@ -16,10 +16,10 @@ import { VolumeService } from '../../services/volume.service';
   selector: 'app-entry-list',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './entry-list.html',
-  styleUrls: ['./entry-list.scss'],
+  templateUrl: './entry-list.component.html',
+  styleUrls: ['./entry-list.component.scss'],
 })
-export class EntryList {
+export class EntryListComponent {
   // Veriler
   allEntries = signal<Entry[]>([]);   // tek seferde çekilen ham liste
   entries    = signal<Entry[]>([]);   // filtrelenmiş liste

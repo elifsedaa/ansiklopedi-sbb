@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sakarya Ansiklopedisi - Sakarya'nın tarihini, kültürünü ve değerlerini keşfedin">
+  <meta name="keywords" content="Sakarya, ansiklopedi, tarih, kültür, bilgi">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+<!-- Header -->
+<header class="header">
+  <div class="header-top">
+    <div class="container">
+      <div class="header-top-content">
+        <div class="contact-info">
+          <span><i class="fas fa-phone"></i> +90 (264) 295 40 00</span>
+          <span><i class="fas fa-envelope"></i> info&#64;sakarya.bel.tr</span>
+        </div>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="header-main">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo">
+          <a routerLink="/">
+            <img src="assets/images/logo.png" alt="Sakarya Belediyesi" class="logo-img">
+            <div class="logo-text">
+              <h1>Sakarya Ansiklopedisi</h1>
+              <span>Bilginin Kapısı</span>
+            </div>
+          </a>
+        </div>
+
+        <nav class="main-nav" [class.active]="isMenuOpen">
+          <ul class="nav-list">
+            <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Ana Sayfa</a></li>
+            <li><a routerLink="/publications" routerLinkActive="active">Yayınlar</a></li>
+            <li><a routerLink="/categories" routerLinkActive="active">Kategoriler</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle">Ciltler <i class="fas fa-chevron-down"></i></a>
+              <ul class="dropdown-menu">
+                <li><a routerLink="/volume/1">1. Cilt</a></li>
+                <li><a routerLink="/volume/2">2. Cilt</a></li>
+                <li><a routerLink="/volume/3">3. Cilt</a></li>
+                <li><a routerLink="/volume/4">4. Cilt</a></li>
+              </ul>
+            </li>
+            <li><a routerLink="/add-publication" routerLinkActive="active">Yayın Ekle</a></li>
+          </ul>
+        </nav>
+
+        <div class="header-actions">
+          <button class="search-btn" (click)="toggleSearch()" aria-label="Arama">
+            <i class="fas fa-search"></i>
+          </button>
+          <button class="menu-btn" (click)="toggleMenu()" aria-label="Menü">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Overlay -->
+  <div class="search-overlay" [class.active]="isSearchOpen">
+    <div class="search-container">
+      <div class="search-box">
+        <form (ngSubmit)="onSearchSubmit()">
+          <input
+            type="text"
+            class="search-input"
+            [(ngModel)]="searchQuery"
+            name="search"
+            placeholder="Ansiklopedide arama yapın..."
+            autocomplete="off">
+          <button type="submit" class="search-submit">
+            <i class="fas fa-search"></i>
+          </button>
+        </form>
+        <button class="search-close" (click)="closeSearch()">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="search-suggestions" *ngIf="searchQuery">
+        <!-- Arama önerileri buraya gelecek -->
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Main Content -->
+<main class="main-content">
+  <router-outlet></router-outlet>
+</main>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-main">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>Sakarya Ansiklopedisi</h3>
+          <p>Sakarya'nın zengin tarihini, kültürünü ve değerlerini geleceğe aktaran dijital ansiklopedi platformu.</p>
+          <div class="footer-social">
+            <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+            <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+            <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+            <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          </div>
+        </div>
+
+        <div class="footer-section">
+          <h4>Hızlı Linkler</h4>
+          <ul>
+            <li><a routerLink="/">Ana Sayfa</a></li>
+            <li><a routerLink="/publications">Yayınlar</a></li>
+            <li><a routerLink="/categories">Kategoriler</a></li>
+            <li><a href="#" >Hakkımızda</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>Kategoriler</h4>
+          <ul>
+            <li><a href="#">Tarih</a></li>
+            <li><a href="#">Kültür</a></li>
+            <li><a href="#">Coğrafya</a></li>
+            <li><a href="#">Kişiler</a></li>
+          </ul>
+        </div>
+
+        <div class="footer-section">
+          <h4>İletişim</h4>
+          <div class="contact-info">
+            <p><i class="fas fa-map-marker-alt"></i> Sakarya Belediyesi, Sakarya</p>
+            <p><i class="fas fa-phone"></i> +90 (264) 295 40 00</p>
+            <p><i class="fas fa-envelope"></i> info&#64;sakarya.bel.tr</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <div class="container">
+      <div class="footer-bottom-content">
+        <p>&copy; 2024 Sakarya Belediyesi. Tüm hakları saklıdır.</p>
+        <div class="footer-links">
+          <a href="#">Gizlilik Politikası</a>
+          <a href="#">Kullanım Şartları</a>
+          <a href="#">Site Haritası</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>

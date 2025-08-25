@@ -1,80 +1,75 @@
+// // src/app/app.routes.ts
+// import { Routes } from '@angular/router';
+//
+// export const routes: Routes = [
+//   {
+//     path: '',
+//     loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
+//     title: 'Ana Sayfa - Sakarya Ansiklopedisi'
+//   },
+//   {
+//     path: 'yayin-ekle',
+//     loadComponent: () => import('./pages/add-publication/add-publication.component').then(m => m.AddPublicationComponent),
+//     title: 'Yayın Ekle - Sakarya Ansiklopedisi'
+//   },
+//   {
+//     path: 'yayinlar',
+//     loadComponent: () => import('./pages/publications/publications.component').then(m => m.PublicationsComponent),
+//     title: 'Yayınlar - Sakarya Ansiklopedisi'
+//   },
+//   // {
+//   //   path: 'makale/:id',
+//   //   loadComponent: () => import('./pages/article-detail/article-detail.component').then(m => m.ArticleDetailComponent),
+//   //   title: 'Makale Detayı - Sakarya Ansiklopedisi'
+//   // },
+//   // {
+//   //   path: 'kategori/:id',
+//   //   loadComponent: () => import('./pages/category/category.component').then(m => m.CategoryComponent),
+//   //   title: 'Kategori - Sakarya Ansiklopedisi'
+//   // },
+//   // {
+//   //   path: 'arama',
+//   //   loadComponent: () => import('./pages/search/search.component').then(m => m.SearchComponent),
+//   //   title: 'Arama Sonuçları - Sakarya Ansiklopedisi'
+//   // },
+//   {
+//     path: '**',
+//     redirectTo: '',
+//     pathMatch: 'full'
+//   }
+// ];
+
+
+
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  // Ana sayfa - Home Component
   {
     path: '',
-    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
-    title: 'Ansiklopedi SBB - Ana Sayfa'
+    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent)
   },
-
-  // Home rotası (alternatif erişim)
   {
-    path: 'home',
-    loadComponent: () => import('./pages/home/home.component').then(m => m.HomeComponent),
-    title: 'Ansiklopedi SBB - Ana Sayfa'
+    path: 'publications',
+    loadComponent: () => import('./pages/publications/publications.component').then(m => m.PublicationsComponent)
   },
-  //
-  // // Arama sayfası
-  // {
-  //   path: 'search',
-  //   loadComponent: () => import('./pages/search/search.component').then(m => m.SearchComponent),
-  //   title: 'Arama - Ansiklopedi SBB'
-  // },
-  //
-  // // Kategoriler sayfası
-  // {
-  //   path: 'categories',
-  //   loadComponent: () => import('./pages/categories/categories.component').then(m => m.CategoriesComponent),
-  //   title: 'Kategoriler - Ansiklopedi SBB'
-  // },
-  //
-  // // Kategori detay sayfası
-  // {
-  //   path: 'category/:id',
-  //   loadComponent: () => import('./pages/category-detail/category-detail.component').then(m => m.CategoryDetailComponent),
-  //   title: 'Kategori Detayı - Ansiklopedi SBB'
-  // },
-  //
-  // // Makale detay sayfası
-  // {
-  //   path: 'article/:id',
-  //   loadComponent: () => import('./pages/article-detail/article-detail.component').then(m => m.ArticleDetailComponent),
-  //   title: 'Makale - Ansiklopedi SBB'
-  // },
-  //
-  // // Yazar sayfası
-  // {
-  //   path: 'author/:id',
-  //   loadComponent: () => import('./pages/author/author.component').then(m => m.AuthorComponent),
-  //   title: 'Yazar - Ansiklopedi SBB'
-  // },
-  //
-  // // Cilt sayfası
+  {
+    path: 'categories',
+    loadComponent: () => import('./pages/categories/categories.component').then(m => m.CategoriesComponent)
+  },
+  {
+    path: 'add-publication',
+    loadComponent: () => import('./pages/add-publication/add-publication.component').then(m => m.AddPublicationComponent)
+  },
   // {
   //   path: 'volume/:id',
-  //   loadComponent: () => import('./pages/volume/volume.component').then(m => m.VolumeComponent),
-  //   title: 'Cilt - Ansiklopedi SBB'
+  //   loadComponent: () => import('./pages/volume-detail/volume-detail.component').then(m => m.VolumeDetailComponent)
   // },
-  //
-  // // Gelişmiş arama
   // {
-  //   path: 'advanced-search',
-  //   loadComponent: () => import('./pages/advanced-search/advanced-search.component').then(m => m.AdvancedSearchComponent),
-  //   title: 'Gelişmiş Arama - Ansiklopedi SBB'
+  //   path: 'publication/:id',
+  //   loadComponent: () => import('./pages/publication-detail/publication-detail.component').then(m => m.PublicationDetailComponent)
   // },
-  //
-  // // Arama sonuçları
-  // {
-  //   path: 'search-results',
-  //   loadComponent: () => import('./pages/search-results/search-results.component').then(m => m.SearchResultsComponent),
-  //   title: 'Arama Sonuçları - Ansiklopedi SBB'
-  // },
-
-  // 404 - Wildcard route (en sona koyulmalı)
   {
     path: '**',
-    redirectTo: '',
-    pathMatch: 'full'
+    redirectTo: ''
   }
 ];

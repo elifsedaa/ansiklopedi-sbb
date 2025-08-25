@@ -1,186 +1,247 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
 
-// Services
-import { EncyclopediaService, Article, Statistics, FeaturedCategory } from '../../core/services/encyclopedia.service';
-import { SearchService } from '../../core/services/search.service';
 
-// Components
-import { FeaturedCategoriesComponent } from './components/featured-categories/featured-categories.component';
-import { StatisticsSectionComponent } from './components/statistics-section/statistics-section.component';
-import { RecentArticlesComponent } from './components/recent-articles/recent-articles.component';
+
+interface Publication {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+  author: string;
+  publishDate: string;
+  volumeNumber: number;
+  tags: string[];
+  featured: boolean;
+}
+
+interface Category {
+  id: number;
+  name: string;
+  description: string;
+  icon: string;
+  publicationCount: number;
+}
+
+interface Statistic {
+  icon: string;
+  count: number;
+  label: string;
+  color: string;
+}
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    FormsModule,
-    HttpClientModule,
-    FeaturedCategoriesComponent,
-    StatisticsSectionComponent,
-    RecentArticlesComponent
-  ],
+  imports: [CommonModule, RouterModule],
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-  // Data properties
-  recentArticles: Article[] = [];
-  featuredCategories: FeaturedCategory[] = [];
-  statistics: Statistics = {
-    totalArticles: 0,
-    totalCategories: 0,
-    totalAuthors: 0,
-    dailyVisitors: 0
-  };
-
-  // UI state
-  isLoading = false;
-  searchQuery = '';
-  searchResults: Article[] = [];
-  showSearchResults = false;
-
-  constructor(
-    private encyclopediaService: EncyclopediaService,
-    private searchService: SearchService
-  ) {}
+  featuredPublications: Publication[] = [];
+  latestPublications: Publication[] = [];
+  categories: Category[] = [];
+  statistics: Statistic[] = [];
+  currentSlide = 0;
 
   ngOnInit(): void {
-    this.loadHomeData();
+    this.loadFeaturedPublications();
+    this.loadLatestPublications();
+    this.loadCategories();
+    this.loadStatistics();
+    this.startSlider();
   }
 
-  private async loadHomeData(): Promise<void> {
-    this.isLoading = true;
-
-    try {
-      // Paralel olarak tüm verileri yükle
-      const [articles, categories, stats] = await Promise.all([
-        this.encyclopediaService.getRecentArticles(6).toPromise(),
-        this.encyclopediaService.getFeaturedCategories().toPromise(),
-        this.encyclopediaService.getStatistics().toPromise()
-      ]);
-
-      this.recentArticles = articles || [];
-      this.featuredCategories = categories || [];
-      this.statistics = stats || this.statistics;
-
-      console.log('Home data loaded:', {
-        articles: this.recentArticles.length,
-        categories: this.featuredCategories.length,
-        stats: this.statistics
-      });
-
-    } catch (error) {
-      console.error('Error loading home data:', error);
-      this.loadFallbackData();
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  // Fallback data (API çalışmazsa)
-  private loadFallbackData(): void {
-    this.recentArticles = [
+  loadFeaturedPublications(): void {
+    // Bu data fake API'den gelecek
+    this.featuredPublications = [
       {
-        id: 'fallback-1',
-        title: 'Sakarya Nehri',
-        excerpt: 'Türkiye\'nin en uzun nehirlerinden biri olan Sakarya Nehri hakkında detaylı bilgiler.',
-        author: 'Mehmet Kara',
-        categoryName: 'Coğrafya',
-        publishDate: new Date(),
-        viewCount: 300,
-        imageUrl: '/assets/images/default-article.jpg'
+        id: 1,
+        title: 'Sakarya\'nın Tarihi Dokusu',
+        description: 'Sakarya\'nın binlerce yıllık tarihini keşfedin. Antik dönemlerden günümüze kadar uzanan zengin kültürel miras.',
+        image: 'assets/images/featured-1.jpg',
+        category: 'Tarih',
+        author: 'Prof. Dr. Ahmet Yılmaz',
+        publishDate: '2024-01-15',
+        volumeNumber: 1,
+        tags: ['tarih', 'kültür', 'miras'],
+        featured: true
       },
       {
-        id: 'fallback-2',
-        title: 'Sapanca Gölü',
-        excerpt: 'Sakarya\'nın en bilinen göllerinden biri olan Sapanca Gölü ve çevresindeki doğal güzellikler.',
-        author: 'Ali Öztürk',
-        categoryName: 'Doğa',
-        publishDate: new Date(),
-        viewCount: 150,
-        imageUrl: '/assets/images/default-article.jpg'
+        id: 2,
+        title: 'Sakarya\'nın Doğal Güzellikleri',
+        description: 'Sapanca Gölü\'nden Karasu sahillerine, Sakarya\'nın eşsiz doğal zenginliklerini keşfedin.',
+        image: 'assets/images/featured-2.jpg',
+        category: 'Coğrafya',
+        author: 'Dr. Mehmet Demir',
+        publishDate: '2024-01-10',
+        volumeNumber: 2,
+        tags: ['doğa', 'coğrafya', 'turizm'],
+        featured: true
+      },
+      {
+        id: 3,
+        title: 'Sakarya\'nın Kültürel Zenginlikleri',
+        description: 'Geleneksel sanatlardan modern kültürel etkinliklere, Sakarya\'nın renkli kültürel yaşamı.',
+        image: 'assets/images/featured-3.jpg',
+        category: 'Kültür',
+        author: 'Prof. Dr. Ayşe Kaya',
+        publishDate: '2024-01-05',
+        volumeNumber: 3,
+        tags: ['kültür', 'sanat', 'gelenek'],
+        featured: true
       }
     ];
+  }
 
-    this.featuredCategories = [
-      { id: 'cat_tarih', name: 'Tarih', icon: '🏛️', count: 8 },
-      { id: 'cat_mimari', name: 'Mimari', icon: '🏗️', count: 6 },
-      { id: 'cat_turizm', name: 'Turizm', icon: '🏖️', count: 5 },
-      { id: 'cat_doga', name: 'Doğa', icon: '🌿', count: 4 },
-      { id: 'cat_cografya', name: 'Coğrafya', icon: '🌍', count: 3 }
+  loadLatestPublications(): void {
+    this.latestPublications = [
+      {
+        id: 4,
+        title: 'Sakarya Üniversitesi ve Eğitim',
+        description: 'Sakarya\'nın eğitim hayatındaki gelişmeleri ve üniversitenin kente katkıları.',
+        image: 'assets/images/publication-1.jpg',
+        category: 'Eğitim',
+        author: 'Dr. Fatma Özkan',
+        publishDate: '2024-01-20',
+        volumeNumber: 1,
+        tags: ['eğitim', 'üniversite'],
+        featured: false
+      },
+      {
+        id: 5,
+        title: 'Sakarya\'nın Ekonomik Yapısı',
+        description: 'Sanayi ve ticaretteki gelişmeler ile Sakarya\'nın ekonomik potansiyeli.',
+        image: 'assets/images/publication-2.jpg',
+        category: 'Ekonomi',
+        author: 'Prof. Dr. Hasan Çelik',
+        publishDate: '2024-01-18',
+        volumeNumber: 2,
+        tags: ['ekonomi', 'sanayi', 'ticaret'],
+        featured: false
+      },
+      {
+        id: 6,
+        title: 'Sakarya\'da Yaşayan Önemli Şahsiyetler',
+        description: 'Sakarya\'ya değer katan tarihi ve çağdaş önemli kişilikler.',
+        image: 'assets/images/publication-3.jpg',
+        category: 'Kişiler',
+        author: 'Dr. Mustafa Yıldırım',
+        publishDate: '2024-01-16',
+        volumeNumber: 1,
+        tags: ['kişiler', 'biyografi'],
+        featured: false
+      },
+      {
+        id: 7,
+        title: 'Sakarya Mutfağı ve Yemek Kültürü',
+        description: 'Geleneksel lezzetlerden modern yorumlara Sakarya\'nın gastronomi kültürü.',
+        image: 'assets/images/publication-4.jpg',
+        category: 'Kültür',
+        author: 'Chef Elif Şahin',
+        publishDate: '2024-01-14',
+        volumeNumber: 3,
+        tags: ['mutfak', 'kültür', 'yemek'],
+        featured: false
+      }
     ];
-
-    this.statistics = {
-      totalArticles: 13,
-      totalCategories: 5,
-      totalAuthors: 10,
-      dailyVisitors: 450
-    };
   }
 
-  // Arama fonksiyonları
-  async onSearch(): Promise<void> {
-    if (!this.searchQuery.trim()) {
-      this.clearSearch();
-      return;
-    }
-
-    if (this.searchQuery.length < 2) {
-      return;
-    }
-
-    try {
-      this.isLoading = true;
-      const results = await this.searchService.searchArticles(this.searchQuery).toPromise();
-      this.searchResults = results || [];
-      this.showSearchResults = true;
-
-      console.log(`Found ${this.searchResults.length} results for: ${this.searchQuery}`);
-    } catch (error) {
-      console.error('Search error:', error);
-      this.searchResults = [];
-    } finally {
-      this.isLoading = false;
-    }
+  loadCategories(): void {
+    this.categories = [
+      {
+        id: 1,
+        name: 'Tarih',
+        description: 'Sakarya\'nın geçmişten günümüze tarihi',
+        icon: 'fas fa-landmark',
+        publicationCount: 45
+      },
+      {
+        id: 2,
+        name: 'Coğrafya',
+        description: 'Sakarya\'nın coğrafi özellikleri',
+        icon: 'fas fa-mountain',
+        publicationCount: 32
+      },
+      {
+        id: 3,
+        name: 'Kültür',
+        description: 'Kültürel değerler ve gelenekler',
+        icon: 'fas fa-theater-masks',
+        publicationCount: 38
+      },
+      {
+        id: 4,
+        name: 'Kişiler',
+        description: 'Önemli şahsiyetler ve biyografiler',
+        icon: 'fas fa-users',
+        publicationCount: 28
+      },
+      {
+        id: 5,
+        name: 'Ekonomi',
+        description: 'Ekonomik yapı ve gelişmeler',
+        icon: 'fas fa-chart-line',
+        publicationCount: 22
+      },
+      {
+        id: 6,
+        name: 'Eğitim',
+        description: 'Eğitim kurumları ve gelişmeleri',
+        icon: 'fas fa-graduation-cap',
+        publicationCount: 18
+      }
+    ];
   }
 
-  onSearchInputChange(): void {
-    // Gerçek zamanlı arama için search service'i güncelle
-    this.searchService.updateSearchTerm(this.searchQuery);
-
-    if (!this.searchQuery.trim()) {
-      this.clearSearch();
-    }
+  loadStatistics(): void {
+    this.statistics = [
+      {
+        icon: 'fas fa-book',
+        count: 183,
+        label: 'Toplam Yayın',
+        color: '#2c5282'
+      },
+      {
+        icon: 'fas fa-layer-group',
+        count: 4,
+        label: 'Cilt Sayısı',
+        color: '#38a169'
+      },
+      {
+        icon: 'fas fa-tags',
+        count: 6,
+        label: 'Kategori',
+        color: '#ed8936'
+      },
+      {
+        icon: 'fas fa-users',
+        count: 25,
+        label: 'Yazar',
+        color: '#9f7aea'
+      }
+    ];
   }
 
-  clearSearch(): void {
-    this.searchQuery = '';
-    this.searchResults = [];
-    this.showSearchResults = false;
-    this.searchService.clearResults();
+  startSlider(): void {
+    setInterval(() => {
+      this.nextSlide();
+    }, 5000);
   }
 
-  // Event handlers
-  onArticleClick(articleId: string): void {
-    console.log('Article clicked:', articleId);
-    // Router ile makale detay sayfasına git
-    // this.router.navigate(['/article', articleId]);
+  nextSlide(): void {
+    this.currentSlide = (this.currentSlide + 1) % this.featuredPublications.length;
   }
 
-  onCategoryClick(categoryId: string): void {
-    console.log('Category clicked:', categoryId);
-    // Router ile kategori sayfasına git
-    // this.router.navigate(['/category', categoryId]);
+  prevSlide(): void {
+    this.currentSlide = this.currentSlide === 0
+      ? this.featuredPublications.length - 1
+      : this.currentSlide - 1;
   }
 
-  // Loading state getter
-  get isDataLoading(): boolean {
-    return this.isLoading;
+  goToSlide(index: number): void {
+    this.currentSlide = index;
   }
 }

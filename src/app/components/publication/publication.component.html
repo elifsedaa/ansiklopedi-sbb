@@ -1,0 +1,8 @@
+<div class="publications">
+  <h2>Yayınlar</h2>
+  <ul>
+    <li *ngFor="let pub of publications" (click)="goToPublication(pub.id)">
+      {{ pub.title }} - Kategori: {{ pub.categoryId }} - Yazar: {{ pub.authorId }}
+    </li>
+  </ul>
+</div>

@@ -1,95 +1,174 @@
-<div class="home-page">
-
-  <!-- Hero Section with Search -->
-  <section class="hero-section">
-    <div class="container">
-      <div class="hero-content">
-        <h1 class="hero-title">Ansiklopedi SBB</h1>
-        <p class="hero-subtitle">Sakarya Büyükşehir Belediyesi Ansiklopedisi</p>
-
-        <!-- Search Box -->
-        <div class="search-container">
-          <div class="search-box">
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchInputChange()"
-              (keyup.enter)="onSearch()"
-              placeholder="Makale, kategori veya yazar ara..."
-              class="search-input">
-            <button
-              (click)="onSearch()"
-              class="search-button"
-              [disabled]="isLoading">
-              <span *ngIf="!isLoading">🔍</span>
-              <span *ngIf="isLoading" class="loading-spinner">⏳</span>
-            </button>
+<!-- Hero Section -->
+<section class="hero">
+  <div class="hero-slider">
+    <div class="slide"
+         *ngFor="let publication of featuredPublications; let i = index"
+         [class.active]="i === currentSlide">
+      <div class="slide-bg" [style.background-image]="'url(' + publication.image + ')'"></div>
+      <div class="slide-overlay"></div>
+      <div class="container">
+        <div class="slide-content">
+          <span class="slide-category">{{ publication.category }}</span>
+          <h1>{{ publication.title }}</h1>
+          <p>{{ publication.description }}</p>
+          <div class="slide-meta">
+            <span><i class="fas fa-user"></i> {{ publication.author }}</span>
+            <span><i class="fas fa-calendar"></i> {{ publication.publishDate | date:'dd.MM.yyyy' }}</span>
           </div>
-
-          <!-- Search Results -->
-          <div *ngIf="showSearchResults" class="search-results">
-            <div class="search-results-header">
-              <h3>Arama Sonuçları ({{ searchResults.length }})</h3>
-              <button (click)="clearSearch()" class="close-search">✕</button>
-            </div>
-            <div *ngIf="searchResults.length === 0" class="no-results">
-              <p>Arama kriterlerinize uygun sonuç bulunamadı.</p>
-            </div>
-            <div *ngIf="searchResults.length > 0" class="results-list">
-              <div
-                *ngFor="let result of searchResults"
-                (click)="onArticleClick(result.id)"
-                class="result-item">
-                <h4>{{ result.title }}</h4>
-                <p>{{ result.excerpt }}</p>
-                <div class="result-meta">
-                  <span class="category">{{ result.categoryName }}</span>
-                  <span class="author">{{ result.author }}</span>
-                </div>
-              </div>
-            </div>
+          <div class="slide-actions">
+            <a [routerLink]="['/publication', publication.id]" class="btn btn-primary">Detayları Gör</a>
+            <a [routerLink]="['/volume', publication.volumeNumber]" class="btn btn-outline">{{ publication.volumeNumber }}. Cilt</a>
           </div>
         </div>
       </div>
     </div>
-  </section>
+  </div>
 
-  <!-- Loading Indicator -->
-  <div *ngIf="isDataLoading" class="loading-section">
+  <div class="slider-controls">
     <div class="container">
-      <div class="loading-content">
-        <div class="loading-spinner">⏳</div>
-        <p>Veriler yükleniyor...</p>
+      <button class="slider-btn prev" (click)="prevSlide()">
+        <i class="fas fa-chevron-left"></i>
+      </button>
+      <div class="slider-indicators">
+        <button
+          *ngFor="let publication of featuredPublications; let i = index"
+          class="indicator"
+          [class.active]="i === currentSlide"
+          (click)="goToSlide(i)">
+        </button>
+      </div>
+      <button class="slider-btn next" (click)="nextSlide()">
+        <i class="fas fa-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- Statistics Section -->
+<section class="statistics">
+  <div class="container">
+    <div class="stats-grid">
+      <div class="stat-card" *ngFor="let stat of statistics">
+        <div class="stat-icon" [style.background-color]="stat.color">
+          <i [class]="stat.icon"></i>
+        </div>
+        <div class="stat-content">
+          <h3>{{ stat.count }}</h3>
+          <p>{{ stat.label }}</p>
+        </div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- Statistics Section -->
-  <app-statistics-section
-    *ngIf="!isDataLoading"
-    [statistics]="statistics">
-  </app-statistics-section>
-
-  <!-- Featured Categories -->
-  <section *ngIf="!isDataLoading" class="section">
-    <div class="container">
-      <h2 class="section-title">Öne Çıkan Kategoriler</h2>
-      <app-featured-categories
-        [categories]="featuredCategories"
-        (categoryClick)="onCategoryClick($event)">
-      </app-featured-categories>
+<!-- About Section -->
+<section class="about">
+  <div class="container">
+    <div class="about-content">
+      <div class="about-text">
+        <h2>Sakarya Ansiklopedisi Hakkında</h2>
+        <p>Sakarya Ansiklopedisi, şehrimizin zengin tarihini, kültürünü, coğrafyasını ve önemli şahsiyetlerini dijital ortamda bir araya getiren kapsamlı bir bilgi kaynağıdır.</p>
+        <p>Uzman akademisyenler ve araştırmacılar tarafından hazırlanan bu ansiklopedi, Sakarya'nın geçmişini geleceğe aktarma misyonuyla hareket eder.</p>
+        <div class="about-features">
+          <div class="feature">
+            <i class="fas fa-search"></i>
+            <span>Gelişmiş Arama</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-mobile-alt"></i>
+            <span>Mobil Uyumlu</span>
+          </div>
+          <div class="feature">
+            <i class="fas fa-download"></i>
+            <span>PDF İndirme</span>
+          </div>
+        </div>
+      </div>
+      <div class="about-image">
+        <img src="assets/images/about-sakarya.jpg" alt="Sakarya Manzarası">
+      </div>
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- Recent Articles -->
-  <section *ngIf="!isDataLoading" class="section">
-    <div class="container">
-      <h2 class="section-title">Son Makaleler</h2>
-      <app-recent-articles
-        [articles]="recentArticles"
-        (articleClick)="onArticleClick($event)">
-      </app-recent-articles>
+<!-- Categories Section -->
+<section class="categories">
+  <div class="container">
+    <div class="section-header">
+      <h2>Kategoriler</h2>
+      <p>Sakarya'nın farklı yönlerini keşfetmek için kategori seçin</p>
     </div>
-  </section>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories">
+        <div class="category-icon">
+          <i [class]="category.icon"></i>
+        </div>
+        <h3>{{ category.name }}</h3>
+        <p>{{ category.description }}</p>
+        <div class="category-count">
+          <span>{{ category.publicationCount }} yayın</span>
+        </div>
+        <a [routerLink]="['/categories']" [queryParams]="{category: category.id}" class="category-link">
+          <i class="fas fa-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
 
-</div>
+<!-- Latest Publications -->
+<section class="latest-publications">
+  <div class="container">
+    <div class="section-header">
+      <h2>Son Yayınlar</h2>
+      <p>En güncel içerikleri keşfedin</p>
+      <a routerLink="/publications" class="view-all">Tümünü Gör <i class="fas fa-arrow-right"></i></a>
+    </div>
+    <div class="publications-grid">
+      <div class="publication-card" *ngFor="let publication of latestPublications">
+        <div class="publication-image">
+          <img [src]="publication.image" [alt]="publication.title">
+          <div class="publication-category">{{ publication.category }}</div>
+        </div>
+        <div class="publication-content">
+          <h3>{{ publication.title }}</h3>
+          <p>{{ publication.description }}</p>
+          <div class="publication-meta">
+            <div class="meta-item">
+              <i class="fas fa-user"></i>
+              <span>{{ publication.author }}</span>
+            </div>
+            <div class="meta-item">
+              <i class="fas fa-calendar"></i>
+              <span>{{ publication.publishDate | date:'dd.MM.yyyy' }}</span>
+            </div>
+          </div>
+          <div class="publication-tags">
+            <span class="tag" *ngFor="let tag of publication.tags">#{{ tag }}</span>
+          </div>
+          <a [routerLink]="['/publication', publication.id]" class="read-more">
+            Devamını Oku <i class="fas fa-arrow-right"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Newsletter Section -->
+<section class="newsletter">
+  <div class="container">
+    <div class="newsletter-content">
+      <div class="newsletter-text">
+        <h2>Güncellemelerden Haberdar Olun</h2>
+        <p>Yeni yayınlar ve ansiklopedideki güncellemeler hakkında bilgi almak için bültenimize abone olun.</p>
+      </div>
+      <div class="newsletter-form">
+        <form>
+          <input type="email" placeholder="E-posta adresinizi girin" required>
+          <button type="submit" class="btn btn-primary">Abone Ol</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
