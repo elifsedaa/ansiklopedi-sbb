@@ -1,47 +1,42 @@
-import { Component, OnInit } from '@angular/core';
+// src/app/app.component.ts
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 
 @Component({
   selector: 'app-root',
-  standalone: false,
+  standalone: true,
+  imports: [CommonModule, FormsModule, RouterOutlet, RouterLink, RouterLinkActive],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
+export class AppComponent {
   title = 'Sakarya Ansiklopedisi';
-  searchQuery = '';
   isMenuOpen = false;
   isSearchOpen = false;
+  searchQuery = '';
 
-  ngOnInit(): void {
-    // Sayfa yüklendiğinde scroll pozisyonunu sıfırla
-    window.scrollTo(0, 0);
-  }
-
-  toggleMenu(): void {
+  toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
-    document.body.style.overflow = this.isMenuOpen ? 'hidden' : 'auto';
   }
 
-  toggleSearch(): void {
+  closeMenu() {
+    this.isMenuOpen = false;
+  }
+
+  toggleSearch() {
     this.isSearchOpen = !this.isSearchOpen;
-    if (this.isSearchOpen) {
-      setTimeout(() => {
-        const searchInput = document.querySelector('.search-input') as HTMLInputElement;
-        searchInput?.focus();
-      }, 100);
-    }
   }
 
-  onSearchSubmit(): void {
-    if (this.searchQuery.trim()) {
-      // Arama fonksiyonunu burada implement edeceksiniz
-      console.log('Arama yapılıyor:', this.searchQuery);
-      this.isSearchOpen = false;
-    }
-  }
-
-  closeSearch(): void {
+  closeSearch() {
     this.isSearchOpen = false;
-    this.searchQuery = '';
+  }
+
+  onSearchSubmit() {
+    if (this.searchQuery.trim()) {
+      console.log('Arama yapıldı:', this.searchQuery);
+      // Burada arama fonksiyonunu implement edebilirsin
+    }
   }
 }
