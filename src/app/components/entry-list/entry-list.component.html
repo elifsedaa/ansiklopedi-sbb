@@ -1,0 +1,49 @@
+<h2>Ansiklopedi Maddeleri</h2>
+
+<div class="filters">
+  <!-- Yazar filtre -->
+  <label>
+    Yazar:
+    <select
+      [ngModel]="selectedAuthor()"
+      (ngModelChange)="selectedAuthor.set($any($event)); onFilterChange()">
+      <option [ngValue]="null">Tümü</option>
+      <option *ngFor="let a of authors()" [ngValue]="a.id">{{ a.fullName }}</option>
+    </select>
+  </label>
+
+  <!-- Kategori filtre -->
+  <label>
+    Kategori:
+    <select
+      [ngModel]="selectedCategory()"
+      (ngModelChange)="selectedCategory.set($any($event)); onFilterChange()">
+      <option [ngValue]="null">Tümü</option>
+      <option *ngFor="let c of categories()" [ngValue]="c.id">{{ c.name }}</option>
+    </select>
+  </label>
+
+  <!-- Cilt filtre -->
+  <label>
+    Cilt:
+    <select
+      [ngModel]="selectedVolume()"
+      (ngModelChange)="selectedVolume.set($any($event)); onFilterChange()">
+      <option [ngValue]="null">Tümü</option>
+      <option *ngFor="let v of volumes()" [ngValue]="v.id">{{ v.title }}</option>
+    </select>
+  </label>
+</div>
+
+<p *ngIf="loading()">Yükleniyor...</p>
+<p *ngIf="error()">{{ error() }}</p>
+
+<ul *ngIf="!loading() && !error()">
+  <li *ngFor="let e of entries()">
+    <h3>{{ e.title }}</h3>
+    <p>{{ e.summary }}</p>
+    <small>Cilt: {{ getVolumeTitleById(e.volume?.volumeId) }}</small>
+    <small>Durum: {{ e.status || 'Bilinmiyor' }}</small>
+    <hr />
+  </li>
+</ul>

@@ -1,0 +1,27 @@
+<div class="add-publication">
+  <h2>Yeni Yayın Ekle</h2>
+
+  <form (ngSubmit)="addPublication()">
+    <label>Başlık</label>
+    <input [(ngModel)]="newPublication.title" name="title" required />
+
+    <label>Kategori</label>
+    <select [(ngModel)]="newPublication.categoryId" name="categoryId">
+      <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+    </select>
+
+    <label>Yazar</label>
+    <select [(ngModel)]="newPublication.authorId" name="authorId">
+      <option *ngFor="let auth of authors" [value]="auth.id">{{ auth.name }}</option>
+    </select>
+
+    <button type="submit">Ekle</button>
+  </form>
+
+  <h3>Mevcut Yayınlar</h3>
+  <ul>
+    <li *ngFor="let pub of publications">
+      {{ pub.title }} - {{ pub.categoryId }} - {{ pub.authorId }}
+    </li>
+  </ul>
+</div>

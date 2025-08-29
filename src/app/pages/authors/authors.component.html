@@ -1,0 +1,17 @@
+<div class="authors-section">
+  <div class="authors-grid">
+    <div class="author-card" *ngFor="let author of authors">
+      <div class="author-image">
+        <img
+          [src]="getAuthorImage(author)"
+          (error)="onImageError($event)"
+          [alt]="author.fullName">
+      </div>
+      <div class="author-info">
+        <h4>{{ author.fullName }}</h4>
+        <p class="author-bio">{{ author.bio }}</p>
+        <p class="author-affiliation">{{ author.affiliation }}</p>
+      </div>
+    </div>
+  </div>
+</div>

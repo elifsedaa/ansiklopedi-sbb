@@ -1,0 +1,46 @@
+<!-- Header Navigation -->
+<header class="header-main">
+  <div class="container">
+    <div class="header-content">
+      <div class="logo-section">
+        <img src="assets/images/sakarya-logo.png" alt="Sakarya Büyükşehir Belediyesi" class="logo">
+        <div class="title-section">
+          <h1>Sakarya Ansiklopedisi</h1>
+          <p>Sakarya'nın Bilgi Hazinesi</p>
+        </div>
+      </div>
+
+      <nav class="main-nav">
+        <ul>
+          <li><a routerLink="/" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Ana Sayfa</a></li>
+          <li><a routerLink="/entries" routerLinkActive="active">A-Z Maddeler</a></li>
+          <li><a routerLink="/authors" routerLinkActive="active">Yazarlar</a></li>
+          <li><a routerLink="/volumes" routerLinkActive="active">Ciltler</a></li>
+          <li><a routerLink="/suggestions" routerLinkActive="active">Öneriler</a></li>
+        </ul>
+      </nav>
+
+      <div class="search-toggle" (click)="toggleSearch()">
+        <i class="pi pi-search"></i>
+      </div>
+    </div>
+
+    <div class="search-container" [class.active]="searchActive">
+      <div class="search-input-wrapper">
+        <input
+          type="text"
+          [(ngModel)]="searchTerm"
+          placeholder="Madde veya yazar ara..."
+          class="search-input"
+          (keyup.enter)="performSearch()"
+          #searchInput>
+        <button class="search-btn" (click)="performSearch()">
+          <i class="pi pi-search"></i>
+        </button>
+        <button class="search-close" (click)="closeSearch()">
+          <i class="pi pi-times"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>

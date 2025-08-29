@@ -1,0 +1,46 @@
+// Home Component Specific Styles
+// Global styles artık src/styles.scss'de olacak, burası sadece home'a özel
+
+.hero-section {
+  // Hero section stilleri zaten global SCSS'de tanımlanacak
+  // Buraya sadece home'a özgü override'lar gelecek
+}
+
+.categories-section {
+  // Categories stilleri global'de
+}
+
+.featured-entries {
+  // Entries stilleri global'de
+}
+
+.authors-section {
+  // AuthorsComponent stilleri global'de
+}
+
+.volumes-section {
+  // Volumes stilleri global'de
+}
+
+// Home sayfasına özel animasyonlar
+.hero-content {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.categories-grid .category-button {
+  animation: fadeInUp 0.8s ease-out;
+  animation-delay: 0.2s;
+  animation-fill-mode: both;
+}
+
+.entries-grid .entry-card {
+  animation: fadeInUp 0.8s ease-out;
+  animation-fill-mode: both;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+  &:nth-child(5) { animation-delay: 0.5s; }
+  &:nth-child(6) { animation-delay: 0.6s; }
+}

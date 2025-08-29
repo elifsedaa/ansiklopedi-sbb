@@ -1,0 +1,12 @@
+<section class="featured-categories">
+  <div class="container">
+    <h2 class="section-title">Öne Çıkan Kategoriler</h2>
+    <div class="categories-grid">
+      <div class="category-card" *ngFor="let category of categories">
+        <div class="category-icon">{{ category.icon }}</div>
+        <h3 class="category-name">{{ category.name }}</h3>
+        <p class="category-count">{{ category.count }} makale</p>
+      </div>
+    </div>
+  </div>
+</section>

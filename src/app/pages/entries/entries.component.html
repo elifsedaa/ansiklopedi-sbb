@@ -1,0 +1,235 @@
+<!-- Page HeaderComponent -->
+<div class="page-header">
+  <div class="container">
+    <div class="header-content">
+      <div class="breadcrumb">
+        <a routerLink="/">Ana Sayfa</a>
+        <i class="pi pi-angle-right"></i>
+        <span>A-Z Maddeler</span>
+      </div>
+
+      <h1 class="page-title">A-Z Maddeler</h1>
+      <p class="page-description">
+        Sakarya Ansiklopedisi'ndeki tüm maddeleri alfabetik sıraya göre keşfedin.
+        Aradığınız konuya kolayca ulaşın.
+      </p>
+    </div>
+  </div>
+</div>
+
+<!-- Alphabet Navigation -->
+<div class="alphabet-section">
+  <div class="container">
+    <div class="alphabet-grid">
+      <button
+        *ngFor="let letterObj of turkishAlphabet"
+        class="alphabet-btn"
+        [class.active]="letterObj.isActive"
+        [class.disabled]="letterObj.count === 0"
+        [pTooltip]="letterObj.count + ' madde'"
+        tooltipPosition="top"
+        (click)="selectLetter(letterObj.letter)"
+        [disabled]="letterObj.count === 0">
+        {{ letterObj.letter }}
+        <span class="letter-count" *ngIf="letterObj.count > 0">{{ letterObj.count }}</span>
+      </button>
+    </div>
+  </div>
+</div>
+<!-- Search and Filter Section -->
+<div class="search-filter-section">
+  <div class="container">
+    <div class="search-filter-content">
+      <div class="search-wrapper">
+        <div class="p-input-icon-left">
+          <i class="pi pi-search"></i>
+          <input
+            type="text"
+            [(ngModel)]="searchTerm"
+            placeholder="Madde ara..."
+            class="search-input"
+            (input)="onSearchInput()"
+            (keyup.enter)="performSearch()">
+        </div>
+        <button
+          *ngIf="searchTerm"
+          class="clear-search-btn"
+          (click)="clearSearch()">
+          Temizle
+        </button>
+      </div>
+
+      <div class="filter-wrapper">
+        <!-- <p-dropdown> yerine native select -->
+        <select
+          [(ngModel)]="selectedSort"
+          (change)="onSortChange()"
+          class="sort-dropdown">
+          <option *ngFor="let opt of sortOptions" [value]="opt.value">{{ opt.label }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Results HeaderComponent -->
+<div class="results-header" *ngIf="!loading">
+  <div class="container">
+    <div class="results-info">
+      <h2 class="results-title">
+        <span *ngIf="searchTerm; else letterTemplate">
+          "{{ searchTerm }}" için {{ totalRecords }} madde bulundu
+        </span>
+        <ng-template #letterTemplate>
+          {{ getSelectedLetterName() }} - {{ getSelectedLetterCount() }} Madde
+        </ng-template>
+      </h2>
+
+      <div class="results-meta" *ngIf="totalRecords > 0">
+        <span class="showing-info">
+          {{ first + 1 }}-{{ Math.min(first + rows, totalRecords) }} arası gösteriliyor
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Loading State -->
+<div class="loading-section" *ngIf="loading">
+  <div class="container">
+    <div class="entries-grid">
+      <div class="entry-skeleton" *ngFor="let item of [1,2,3,4,5,6]">
+        <p-card>
+          <ng-template pTemplate="header">
+            <p-skeleton height="120px" styleClass="mb-2"></p-skeleton>
+          </ng-template>
+          <p-skeleton height="1.5rem" styleClass="mb-2"></p-skeleton>
+          <p-skeleton height="1rem" width="80%" styleClass="mb-2"></p-skeleton>
+          <p-skeleton height="1rem" width="60%"></p-skeleton>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Entries Grid -->
+<div class="entries-section" *ngIf="!loading">
+  <div class="container">
+    <!-- No Results Message -->
+    <div class="no-results" *ngIf="totalRecords === 0">
+      <div class="no-results-content">
+        <i class="pi pi-search no-results-icon"></i>
+        <h3>Madde bulunamadı</h3>
+        <p *ngIf="searchTerm; else noLetterResults">
+          "{{ searchTerm }}" araması için sonuç bulunamadı.
+          Farklı anahtar kelimeler deneyebilir veya alfabeden seçim yapabilirsiniz.
+        </p>
+        <ng-template #noLetterResults>
+          <p>{{ selectedLetter }} harfi ile başlayan madde bulunmuyor.</p>
+        </ng-template>
+
+        <div class="no-results-actions">
+          <p-button
+            label="Aramayı Temizle"
+            icon="pi pi-refresh"
+            class="p-button-outlined"
+            (onClick)="clearSearch()"
+            *ngIf="searchTerm">
+          </p-button>
+          <p-button
+            label="Tüm Maddeleri Gör"
+            icon="pi pi-list"
+            class="p-button-primary"
+            (onClick)="selectLetter('A')">
+          </p-button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entries Grid -->
+    <div class="entries-grid" *ngIf="totalRecords > 0">
+      <div class="entry-card" *ngFor="let entry of paginatedEntries">
+        <p-card [routerLink]="getEntryUrl(entry)" class="clickable-card">
+          <ng-template pTemplate="header">
+            <div class="entry-header">
+              <div class="entry-meta">
+                <p-tag
+                  [value]="entry.categoryIds?.[0] || 'Genel'"
+                  [ngClass]="getCategoryBadgeClass(entry)"
+                  class="category-badge">
+                </p-tag>
+                <span class="entry-number">#{{ entry.maddeNo || 'N/A' }}</span>
+              </div>
+
+              <div class="entry-stats">
+
+                <!-- TS18048 çözümü: -->
+                <span class="stat-item" *ngIf="entry.stats?.viewCount">
+                  <i class="pi pi-eye"></i>
+                  {{ entry.stats?.viewCount }}
+                </span>
+                <span class="stat-item" *ngIf="entry.stats?.likeCount">
+                  <i class="pi pi-heart"></i>
+                  {{ entry.stats?.likeCount }}
+                </span>
+              </div>
+            </div>
+          </ng-template>
+
+          <div class="entry-content">
+            <h3 class="entry-title">{{ entry.title }}</h3>
+            <p class="entry-summary">{{ entry.summary }}</p>
+
+            <div class="entry-info" *ngIf="entry.authorships?.length">
+              <div class="authors">
+                <i class="pi pi-user"></i>
+                <span>{{ getAuthorsText(entry) }}</span>
+              </div>
+            </div>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <div class="entry-footer">
+              <p-button
+                label="Detayını Oku"
+                icon="pi pi-arrow-right"
+                class="p-button-text read-more-btn"
+                [routerLink]="getEntryUrl(entry)">
+              </p-button>
+
+              <div class="entry-actions">
+                <button
+                  class="action-btn"
+                  pButton
+                  icon="pi pi-bookmark"
+                  pTooltip="Favorilere Ekle"
+                  class="p-button-text p-button-sm">
+                </button>
+                <button
+                  class="action-btn"
+                  pButton
+                  icon="pi pi-share-alt"
+                  pTooltip="Paylaş"
+                  class="p-button-text p-button-sm">
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination-wrapper" *ngIf="totalRecords > rows">
+      <p-paginator
+        [first]="first"
+        [rows]="rows"
+        [totalRecords]="totalRecords"
+        [rowsPerPageOptions]="[12, 24, 48]"
+        (onPageChange)="onPageChange($event)"
+        styleClass="custom-paginator">
+      </p-paginator>
+    </div>
+  </div>
+</div>

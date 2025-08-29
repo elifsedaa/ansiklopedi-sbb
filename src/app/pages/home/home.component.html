@@ -1,0 +1,182 @@
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-text">
+        <h2>Sakarya'nın Zengin Tarihini ve Kültürünü Keşfedin</h2>
+        <p>
+          Sakarya ili ve çevresinin tarihi, kültürel, coğrafi ve sosyal yapısını anlatan
+          kapsamlı dijital ansiklopedi. Araştırmacılar, öğrenciler ve meraklılar için
+          hazırlanmış güvenilir bilgi kaynağı.
+        </p>
+        <div class="hero-buttons">
+          <p-button
+            label="Maddeleri Keşfet"
+            icon="pi pi-book"
+            class="p-button-primary"
+            (onClick)="router.navigate(['/entries'])">
+          </p-button>
+          <p-button
+            label="Yazarları İncele"
+            icon="pi pi-users"
+            class="p-button-outlined"
+            (onClick)="router.navigate(['/authors'])">
+          </p-button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat-item">
+          <span class="stat-number">{{ stats.totalEntries }}</span>
+          <span class="stat-label">Madde</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ stats.totalAuthors }}</span>
+          <span class="stat-label">Yazar</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-number">{{ stats.totalVolumes }}</span>
+          <span class="stat-label">Cilt</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section">
+  <div class="container">
+    <div class="section-header">
+      <h3>Kategoriler</h3>
+    </div>
+    <div class="categories-grid">
+      <div
+        class="category-button"
+        *ngFor="let category of featuredCategories"
+        (click)="navigateToCategory(category.id)">
+        <p-button
+          [label]="category.name"
+          class="category-btn p-button-outlined p-button-lg"
+          [pTooltip]="category.description"
+          tooltipPosition="top">
+        </p-button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Entries Section -->
+<section class="featured-entries">
+  <div class="container">
+    <div class="section-header">
+      <h3>Öne Çıkan Maddeler</h3>
+    </div>
+
+    <div class="entries-grid">
+      <div class="entry-card" *ngFor="let entry of featuredEntries.slice(0, 6)">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="entry-stats">
+              <span class="stat-item">
+                <i class="pi pi-eye"></i> {{ entry.stats?.viewCount || 0 }}
+              </span>
+              <span class="stat-item">
+                <i class="pi pi-heart"></i> {{ entry.stats?.likeCount || 0 }}
+              </span>
+            </div>
+          </ng-template>
+
+          <div class="entry-content">
+            <h4>{{ entry.title }}</h4>
+            <p>{{ entry.summary }}</p>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <p-button
+              label="Detayını Gör"
+              icon="pi pi-arrow-right"
+              class="p-button-text"
+              (onClick)="navigateToEntry(entry.id)">
+            </p-button>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured AuthorsComponent Section -->
+<section class="authors-section">
+  <div class="container">
+    <div class="section-header">
+      <h3>Öne Çıkan Yazarlar</h3>
+    </div>
+    <div class="authors-grid">
+      <div
+        class="author-card"
+        *ngFor="let author of featuredAuthors.slice(0, 4)">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="author-image">
+              <img
+                [src]="getAuthorImage(author)"
+                (error)="onImageError($event)"
+                [alt]="author.fullName">
+            </div>
+          </ng-template>
+
+          <div class="author-info">
+            <h4>{{ author.fullName }}</h4>
+            <p class="author-bio">{{ author.bio }}</p>
+            <small class="author-affiliation">{{ author.affiliation }}</small>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <p-button
+              label="Yazarı Görüntüle"
+              icon="pi pi-user"
+              class="p-button-sm p-button-outlined"
+              (onClick)="navigateToAuthor(author.id)">
+            </p-button>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Volumes Section -->
+<section class="volumes-section">
+  <div class="container">
+    <div class="section-header">
+      <h3>Ciltler</h3>
+    </div>
+    <div class="volumes-grid">
+      <div
+        class="volume-card"
+        *ngFor="let volume of featuredVolumes">
+        <p-card>
+          <ng-template pTemplate="header">
+            <div class="volume-cover">
+              <img [src]="volume.pdfUrl ? '/assets/images/volumes/' + volume.number + '.jpg' : 'assets/images/default-volume.jpg'" [alt]="volume.title">
+            </div>
+          </ng-template>
+
+          <div class="volume-info">
+            <h4>{{ volume.title }}</h4>
+            <p><i class="pi pi-file-pdf"></i> {{ volume.pageCount }} sayfa</p>
+            <small><i class="pi pi-calendar"></i> {{ volume.publicationDate | date:'yyyy' }}</small>
+          </div>
+
+          <ng-template pTemplate="footer">
+            <p-button
+              label="Cildi İncele"
+              icon="pi pi-book"
+              class="p-button-sm"
+              (onClick)="navigateToVolume(volume.id)">
+            </p-button>
+          </ng-template>
+        </p-card>
+      </div>
+    </div>
+  </div>
+</section>
