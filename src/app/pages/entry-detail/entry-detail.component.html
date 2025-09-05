@@ -1,0 +1,330 @@
+<div class="entry-detail-page">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Madde detayları yükleniyor...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && entry" class="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-container">
+      <div class="container">
+        <p-breadcrumb [model]="breadcrumbItems" [home]="home" class="custom-breadcrumb"></p-breadcrumb>
+      </div>
+    </div>
+
+    <!-- Entry Header -->
+    <div class="entry-header">
+      <div class="container">
+        <div class="entry-header-content">
+          <div class="entry-image-container">
+            <img
+              [src]="getEntryImage()"
+              [alt]="entry.title"
+              (error)="onImageError($event)"
+              class="entry-image">
+            <div class="image-overlay"></div>
+
+            <!-- Entry Number Badge -->
+            <div class="entry-badge">
+              <div class="badge-content">
+                <span class="badge-label">Madde No</span>
+                <span class="badge-number">{{ entry.maddeNo }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="entry-info">
+            <div class="entry-meta-top">
+              <div class="volume-info">
+                <i class="pi pi-book"></i>
+                {{ getVolumeName() }} - Sayfa {{ entry.volume.pageStart }}-{{ entry.volume.pageEnd }}
+              </div>
+              <div class="entry-stats">
+                <div class="stat">
+                  <i class="pi pi-eye"></i>
+                  {{ entry.stats.viewCount }}
+                </div>
+                <div class="stat">
+                  <i class="pi pi-heart"></i>
+                  {{ entry.stats.likeCount }}
+                </div>
+              </div>
+            </div>
+
+            <h1 class="entry-title">{{ entry.title }}</h1>
+
+            <div class="entry-summary">
+              <p>{{ entry.summary }}</p>
+            </div>
+
+            <!-- Entry Metadata -->
+            <div class="entry-metadata">
+              <div class="metadata-item" *ngIf="getAuthorsText()">
+                <i class="pi pi-user"></i>
+                <span class="metadata-label">Yazar:</span>
+                <span class="metadata-value">{{ getAuthorsText() }}</span>
+              </div>
+
+              <div class="metadata-item" *ngIf="getEntryPeriod()">
+                <i class="pi pi-calendar"></i>
+                <span class="metadata-label">Dönem:</span>
+                <span class="metadata-value">{{ getEntryPeriod() }}</span>
+              </div>
+
+              <div class="metadata-item" *ngIf="getPlacesText()">
+                <i class="pi pi-map-marker"></i>
+                <span class="metadata-label">Konum:</span>
+                <span class="metadata-value">{{ getPlacesText() }}</span>
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="categories-section" *ngIf="entry.categoryIds.length > 0">
+              <h4>Kategoriler</h4>
+              <div class="categories-chips">
+                <p-chip
+                  *ngFor="let categoryId of entry.categoryIds"
+                  [label]="getCategoryName(categoryId)"
+                  styleClass="category-chip"
+                  (click)="navigateToCategory(categoryId)">
+                </p-chip>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="action-buttons">
+              <p-button
+                label="Beğen"
+                icon="pi pi-heart"
+                styleClass="p-button-outlined p-button-secondary"
+                (onClick)="toggleLike()">
+              </p-button>
+              <p-button
+                label="Paylaş"
+                icon="pi pi-share-alt"
+                styleClass="p-button-outlined p-button-secondary"
+                (onClick)="shareEntry()">
+              </p-button>
+              <p-button
+                label="Yazdır"
+                icon="pi pi-print"
+                styleClass="p-button-outlined p-button-secondary"
+                (onClick)="printEntry()">
+              </p-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entry Content -->
+    <div class="entry-content-section">
+      <div class="container">
+        <div class="content-wrapper">
+          <!-- Main Content -->
+          <div class="main-column">
+            <!-- Custom Tab Navigation -->
+            <div class="custom-tabs">
+              <div class="tab-nav">
+                <button
+                  class="tab-button"
+                  [class.active]="isActiveTab('content')"
+                  (click)="setActiveTab('content')">
+                  <i class="pi pi-file-text"></i>
+                  İçerik
+                </button>
+                <button
+                  class="tab-button"
+                  [class.active]="isActiveTab('media')"
+                  (click)="setActiveTab('media')"
+                  *ngIf="entry.media && entry.media.length > 0">
+                  <i class="pi pi-images"></i>
+                  Görseller
+                </button>
+                <button
+                  class="tab-button"
+                  [class.active]="isActiveTab('references')"
+                  (click)="setActiveTab('references')"
+                  *ngIf="entry.references && entry.references.length > 0">
+                  <i class="pi pi-bookmark"></i>
+                  Kaynakça
+                </button>
+              </div>
+
+              <div class="tab-content">
+                <!-- İçerik Tab -->
+                <div class="tab-panel" *ngIf="isActiveTab('content')">
+                  <div class="entry-body" [innerHTML]="entry.body"></div>
+                </div>
+
+                <!-- Görseller Tab -->
+                <div class="tab-panel" *ngIf="isActiveTab('media') && entry.media && entry.media.length > 0">
+                  <div class="media-gallery">
+                    <div class="gallery-grid">
+                      <div *ngFor="let media of entry.media" class="gallery-item">
+                        <img [src]="'assets/images/media/' + media.mediaId + '.jpg'"
+                             [alt]="media.caption"
+                             (error)="onImageError($event)">
+                        <div class="media-caption">
+                          <p class="caption-text">{{ media.caption }}</p>
+                          <p class="media-credit">{{ media.credit }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Kaynakça Tab -->
+                <div class="tab-panel" *ngIf="isActiveTab('references') && entry.references && entry.references.length > 0">
+                  <div class="references-section">
+                    <div class="references-list">
+                      <div *ngFor="let reference of entry.references; let i = index" class="reference-item">
+                        <span class="reference-number">{{ i + 1 }}.</span>
+                        <span class="reference-text">{{ reference.text }}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sidebar -->
+          <div class="sidebar-column">
+            <!-- Authors Card -->
+            <div class="info-card authors-card">
+              <h3 class="card-title">
+                <i class="pi pi-users"></i>
+                Yazarlar
+              </h3>
+              <div class="authors-list">
+                <div *ngFor="let authorship of entry.authorships"
+                     class="author-item"
+                     (click)="navigateToAuthor(authorship.authorId)">
+                  <img
+                    [src]="'assets/images/authors/' + authorsMap[authorship.authorId]?.photoMediaId + '.png'"
+                    [alt]="authorsMap[authorship.authorId]?.fullName"
+                    (error)="$event.target.src='assets/images/authors/default.png'"
+                    class="author-avatar">
+                  <div class="author-info">
+                    <h4 class="author-name">{{ authorsMap[authorship.authorId]?.fullName || 'Bilinmeyen' }}</h4>
+                    <p class="author-title">{{ authorsMap[authorship.authorId]?.bio }}</p>
+                    <p class="author-affiliation">{{ authorsMap[authorship.authorId]?.affiliation }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Volume Info Card -->
+            <div class="info-card volume-card">
+              <h3 class="card-title">
+                <i class="pi pi-book"></i>
+                Cilt Bilgisi
+              </h3>
+              <div class="volume-info">
+                <div class="volume-detail">
+                  <span class="detail-label">Cilt:</span>
+                  <span class="detail-value">{{ getVolumeName() }}</span>
+                </div>
+                <div class="volume-detail">
+                  <span class="detail-label">Cilt No:</span>
+                  <span class="detail-value">{{ getVolumeNumber() }}</span>
+                </div>
+                <div class="volume-detail">
+                  <span class="detail-label">Sayfa:</span>
+                  <span class="detail-value">{{ entry.volume.pageStart }}-{{ entry.volume.pageEnd }}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Actions Card -->
+            <div class="info-card actions-card">
+              <h3 class="card-title">
+                <i class="pi pi-cog"></i>
+                İşlemler
+              </h3>
+              <div class="quick-actions">
+                <button class="action-btn" (click)="downloadPDF()">
+                  <i class="pi pi-download"></i>
+                  <span>PDF İndir</span>
+                </button>
+                <button class="action-btn" (click)="printEntry()">
+                  <i class="pi pi-print"></i>
+                  <span>Yazdır</span>
+                </button>
+                <button class="action-btn" (click)="shareEntry()">
+                  <i class="pi pi-share-alt"></i>
+                  <span>Paylaş</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Related Entries Section -->
+    <div class="related-entries-section" *ngIf="relatedEntries.length > 0">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">İlgili Maddeler</h2>
+          <p class="section-subtitle">Bu madde ile ilgili diğer içerikler</p>
+        </div>
+
+        <div class="related-entries-grid">
+          <div
+            *ngFor="let relatedEntry of relatedEntries; trackBy: trackByEntryId"
+            class="related-entry-card"
+            (click)="navigateToEntry(relatedEntry)">
+
+            <div class="related-entry-image">
+              <img
+                [src]="'assets/images/entries/' + relatedEntry.id + '.jpg'"
+                [alt]="relatedEntry.title"
+                (error)="onImageError($event)">
+            </div>
+
+            <div class="related-entry-content">
+              <h4 class="related-entry-title">{{ relatedEntry.title }}</h4>
+              <p class="related-entry-summary">{{ relatedEntry.summary }}</p>
+
+              <div class="related-entry-meta">
+                <div class="related-entry-stats">
+                  <span class="stat">
+                    <i class="pi pi-eye"></i>
+                    {{ relatedEntry.stats.viewCount }}
+                  </span>
+                  <span class="stat">
+                    <i class="pi pi-heart"></i>
+                    {{ relatedEntry.stats.likeCount }}
+                  </span>
+                </div>
+                <div class="related-entry-number">
+                  Madde No: {{ relatedEntry.maddeNo }}
+                </div>
+              </div>
+            </div>
+
+            <div class="related-entry-overlay">
+              <i class="pi pi-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="back-button-container">
+          <p-button
+            label="Maddelere Dön"
+            icon="pi pi-arrow-left"
+            styleClass="p-button-outlined"
+            (onClick)="goBackToEntries()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2,29 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router, ActivatedRoute } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ButtonModule } from 'primeng/button';
-import { CardModule } from 'primeng/card';
-import { InputTextModule } from 'primeng/inputtext';
-// import { DropdownModule } from 'primeng/dropdown';
-import { TagModule } from 'primeng/tag';
-import { PaginatorModule } from 'primeng/paginator';
-import { SkeletonModule } from 'primeng/skeleton';
-import { TooltipModule } from 'primeng/tooltip';
+import { HttpClient } from '@angular/common/http';
+import { BreadcrumbModule } from 'primeng/breadcrumb';
+import { MenuItem } from 'primeng/api';
 import { Entry } from '../../models';
 import { HomeDataService } from '../../services/home-data.service';
-
-interface AlphabetLetter {
-  letter: string;
-  count: number;
-  isActive: boolean;
-}
-
-interface PaginationEvent {
-  first: number;
-  rows: number;
-  page: number;
-  pageCount: number;
-}
+import { AuthorService } from '../../services/author.service';
+import { Author } from '../../models/author.model';
 
 @Component({
   selector: 'app-entries',
@@ -33,93 +17,71 @@ interface PaginationEvent {
     CommonModule,
     RouterModule,
     FormsModule,
-    ButtonModule,
-    CardModule,
-    InputTextModule,
-    // DropdownModule,
-    TagModule,
-    PaginatorModule,
-    SkeletonModule,
-    TooltipModule
+    BreadcrumbModule
   ],
   templateUrl: './entries.component.html',
   styleUrls: ['./entries.component.scss']
 })
 export class EntriesComponent implements OnInit {
-  // Türk alfabesi sırası
-  turkishAlphabet: AlphabetLetter[] = [
-    { letter: 'A', count: 0, isActive: false },
-    { letter: 'B', count: 0, isActive: false },
-    { letter: 'C', count: 0, isActive: false },
-    { letter: 'Ç', count: 0, isActive: false },
-    { letter: 'D', count: 0, isActive: false },
-    { letter: 'E', count: 0, isActive: false },
-    { letter: 'F', count: 0, isActive: false },
-    { letter: 'G', count: 0, isActive: false },
-    { letter: 'Ğ', count: 0, isActive: false },
-    { letter: 'H', count: 0, isActive: false },
-    { letter: 'I', count: 0, isActive: false },
-    { letter: 'İ', count: 0, isActive: false },
-    { letter: 'J', count: 0, isActive: false },
-    { letter: 'K', count: 0, isActive: false },
-    { letter: 'L', count: 0, isActive: false },
-    { letter: 'M', count: 0, isActive: false },
-    { letter: 'N', count: 0, isActive: false },
-    { letter: 'O', count: 0, isActive: false },
-    { letter: 'Ö', count: 0, isActive: false },
-    { letter: 'P', count: 0, isActive: false },
-    { letter: 'R', count: 0, isActive: false },
-    { letter: 'S', count: 0, isActive: false },
-    { letter: 'Ş', count: 0, isActive: false },
-    { letter: 'T', count: 0, isActive: false },
-    { letter: 'U', count: 0, isActive: false },
-    { letter: 'Ü', count: 0, isActive: false },
-    { letter: 'V', count: 0, isActive: false },
-    { letter: 'Y', count: 0, isActive: false },
-    { letter: 'Z', count: 0, isActive: false },
-    { letter: '#', count: 0, isActive: false } // Sayılar ve semboller
-  ];
-
-  allEntries: Entry[] = [];
+  authors: Author[] = []; // yazarları tutacak dizi
+  entries: Entry[] = [];
   filteredEntries: Entry[] = [];
-  paginatedEntries: Entry[] = [];
-
-  selectedLetter = 'A';
-  searchTerm = '';
-  loading = false;
+  selectedLetter: string = 'Tümü';
+  searchTerm: string = '';
+  loading: boolean = false;
+  breadcrumbItems: MenuItem[] = [];
+  home: MenuItem = {};
 
   // Pagination
-  first = 0;
-  rows = 12; // 3x4 grid layout
-  totalRecords = 0;
+  currentPage: number = 1;
+  entriesPerPage: number = 12;
+  totalEntries: number = 0;
 
-  // Filters
-  sortOptions = [
-    { label: 'Alfabetik (A-Z)', value: 'title-asc' },
-    { label: 'Alfabetik (Z-A)', value: 'title-desc' },
-    { label: 'En Popüler', value: 'popular' },
-    { label: 'En Yeni', value: 'newest' },
-    { label: 'En Çok Görüntülenen', value: 'most-viewed' }
-  ];
-  selectedSort = 'title-asc';
+  // Türkçe alfabesi
+  alphabet = ['Tümü', 'A', 'B', 'C', 'Ç', 'D', 'E', 'F', 'G', 'Ğ', 'H', 'I', 'İ', 'J', 'K', 'L', 'M', 'N', 'O', 'Ö', 'P', 'R', 'S', 'Ş', 'T', 'U', 'Ü', 'V', 'Y', 'Z', '#'];
 
   constructor(
-    public router: Router,
+    private http: HttpClient,
+    private router: Router,
     private route: ActivatedRoute,
-    private homeService: HomeDataService
-  ) {}
+    private homeService: HomeDataService,
+    private authorService: AuthorService // inject et
+
+) {}
+  authorsMap: { [id: string]: Author } = {};
+
 
   ngOnInit(): void {
+    this.initBreadcrumb();
+    this.loadAuthorsAndEntries(); // yeni fonksiyon
     this.loadEntries();
     this.checkRouteParams();
+  }
+
+  loadAuthorsAndEntries(): void {
+    this.authorService.getAll().subscribe(authors => {
+      this.authorsMap = authors.reduce((acc, author) => {
+        acc[author.id] = author;
+        return acc;
+      }, {} as { [id: string]: Author });
+
+      // Yazarlar yüklendikten sonra entryleri yükle
+      this.loadEntries();
+    });
+  }
+
+  initBreadcrumb(): void {
+    this.home = { icon: 'pi pi-home', label: 'Anasayfa', routerLink: '/' };
+    this.breadcrumbItems = [
+      { label: 'Maddeler' }
+    ];
   }
 
   checkRouteParams(): void {
     this.route.queryParams.subscribe(params => {
       if (params['letter']) {
-        this.selectedLetter = params['letter'].toUpperCase();
-        this.updateActiveAlphabet();
-        this.filterEntriesByLetter();
+        this.selectedLetter = params['letter'];
+        this.filterByLetter(this.selectedLetter);
       }
       if (params['search']) {
         this.searchTerm = params['search'];
@@ -130,13 +92,11 @@ export class EntriesComponent implements OnInit {
 
   loadEntries(): void {
     this.loading = true;
-
     this.homeService.getEntries().subscribe({
       next: (entries) => {
-        this.allEntries = entries.filter(entry => entry.status === 'published');
-        this.calculateLetterCounts();
-        this.updateActiveAlphabet();
-        this.filterEntriesByLetter();
+        this.entries = entries.filter(entry => entry.status === 'published');
+        this.filteredEntries = this.entries;
+        this.totalEntries = this.entries.length;
         this.loading = false;
       },
       error: (error) => {
@@ -146,199 +106,121 @@ export class EntriesComponent implements OnInit {
     });
   }
 
-  calculateLetterCounts(): void {
-    this.turkishAlphabet.forEach(letterObj => {
-      if (letterObj.letter === '#') {
-        // Sayı veya sembol ile başlayan maddeler
-        letterObj.count = this.allEntries.filter(entry =>
-          /^[0-9]/.test(this.getTitleFirstLetter(entry.title))
-        ).length;
-      } else {
-        letterObj.count = this.allEntries.filter(entry =>
-          this.getTitleFirstLetter(entry.title) === letterObj.letter
-        ).length;
-      }
-    });
-  }
-
-  getTitleFirstLetter(title: string): string {
-    if (!title) return '#';
-
-    const firstChar = title.charAt(0).toUpperCase();
-
-    // Türkçe karakter dönüşümleri
-    const turkishMap: { [key: string]: string } = {
-      'Ç': 'Ç', 'Ğ': 'Ğ', 'İ': 'İ', 'Ö': 'Ö', 'Ş': 'Ş', 'Ü': 'Ü',
-      'I': 'I' // Büyük I ayrı tutuluyor
-    };
-
-    if (turkishMap[firstChar]) {
-      return turkishMap[firstChar];
-    }
-
-    // Normal harfler
-    if (/^[A-Z]$/.test(firstChar)) {
-      return firstChar;
-    }
-
-    // Sayı veya sembol
-    return '#';
-  }
-
-  selectLetter(letter: string): void {
+  // URL temizleme sorunu düzeltildi
+  filterByLetter(letter: string): void {
     this.selectedLetter = letter;
-    this.searchTerm = '';
-    this.first = 0; // Reset pagination
+    this.searchTerm = ''; // Search term'i temizle
+    this.currentPage = 1;
 
-    // URL'i güncelle
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { letter: letter },
-      queryParamsHandling: 'merge'
-    });
-
-    this.updateActiveAlphabet();
-    this.filterEntriesByLetter();
-  }
-
-  updateActiveAlphabet(): void {
-    this.turkishAlphabet.forEach(letterObj => {
-      letterObj.isActive = letterObj.letter === this.selectedLetter;
-    });
-  }
-
-  filterEntriesByLetter(): void {
-    let filtered: Entry[] = [];
-
-    if (this.selectedLetter === '#') {
-      // Sayı ile başlayan maddeler
-      filtered = this.allEntries.filter(entry =>
-        /^[0-9]/.test(this.getTitleFirstLetter(entry.title))
+    if (letter === 'Tümü') {
+      this.filteredEntries = this.entries;
+    } else if (letter === '#') {
+      this.filteredEntries = this.entries.filter(entry =>
+        /^[0-9]/.test(entry.title.charAt(0))
       );
     } else {
-      // Belirtilen harf ile başlayan maddeler
-      filtered = this.allEntries.filter(entry =>
-        this.getTitleFirstLetter(entry.title) === this.selectedLetter
+      this.filteredEntries = this.entries.filter(entry =>
+        entry.title.toLocaleUpperCase('tr-TR').startsWith(letter)
       );
     }
 
-    this.filteredEntries = this.sortEntries(filtered);
-    this.totalRecords = this.filteredEntries.length;
-    this.updatePaginatedEntries();
+    this.totalEntries = this.filteredEntries.length;
+
+    // URL'i güncelle - search parametresini tamamen temizle
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { letter: letter, search: null },
+      queryParamsHandling: 'replace' // 'merge' yerine 'replace' kullan
+    });
   }
 
   performSearch(): void {
     if (!this.searchTerm.trim()) {
-      this.filterEntriesByLetter();
+      this.clearSearch();
       return;
     }
 
     const searchLower = this.searchTerm.toLowerCase();
-    this.filteredEntries = this.allEntries.filter(entry =>
+    this.filteredEntries = this.entries.filter(entry =>
       entry.title.toLowerCase().includes(searchLower) ||
       entry.summary.toLowerCase().includes(searchLower)
     );
 
-    this.filteredEntries = this.sortEntries(this.filteredEntries);
-    this.totalRecords = this.filteredEntries.length;
-    this.first = 0;
-    this.updatePaginatedEntries();
+    this.totalEntries = this.filteredEntries.length;
+    this.currentPage = 1;
 
-    // URL'i güncelle
+    // URL'i güncelle - letter parametresini temizle
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { search: this.searchTerm, letter: null },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'replace' // 'merge' yerine 'replace'
     });
   }
 
   clearSearch(): void {
     this.searchTerm = '';
+
+    // URL'den search parametresini tamamen kaldır
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: { search: null },
-      queryParamsHandling: 'merge'
+      queryParamsHandling: 'replace' // 'merge' yerine 'replace'
     });
-    this.filterEntriesByLetter();
+
+    this.filterByLetter('Tümü');
   }
 
-  sortEntries(entries: Entry[]): Entry[] {
-    switch (this.selectedSort) {
-      case 'title-asc':
-        return entries.sort((a, b) => a.title.localeCompare(b.title, 'tr'));
-
-      case 'title-desc':
-        return entries.sort((a, b) => b.title.localeCompare(a.title, 'tr'));
-
-      case 'popular':
-        return entries.sort((a, b) => {
-          const scoreA = (a.stats?.viewCount || 0) + (a.stats?.likeCount || 0) * 2;
-          const scoreB = (b.stats?.viewCount || 0) + (b.stats?.likeCount || 0) * 2;
-          return scoreB - scoreA;
-        });
-
-      case 'newest':
-        return entries.sort((a, b) => {
-          const dateA = new Date(a.createdAt || '').getTime();
-          const dateB = new Date(b.createdAt || '').getTime();
-          return dateB - dateA;
-        });
-
-      case 'most-viewed':
-        return entries.sort((a, b) =>
-          (b.stats?.viewCount || 0) - (a.stats?.viewCount || 0)
-        );
-
-      default:
-        return entries;
+  onSearchInput(): void {
+    if (this.searchTerm.length >= 2) {
+      this.performSearch();
+    } else if (this.searchTerm.length === 0) {
+      this.clearSearch();
     }
   }
 
-  onSortChange(): void {
-    this.filteredEntries = this.sortEntries([...this.filteredEntries]);
-    this.first = 0;
-    this.updatePaginatedEntries();
-  }
-
-  onPageChange(event: any): void {   // event: PaginatorState veya any
-    this.first = event.first ?? 0;   // undefined ise 0
-    this.rows = event.rows ?? 12;    // undefined ise 12
-    this.updatePaginatedEntries();
-
-    // Sayfanın en üstüne scroll
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  updatePaginatedEntries(): void {
-    const start = this.first;
-    const end = this.first + this.rows;
-    this.paginatedEntries = this.filteredEntries.slice(start, end);
-  }
-
-  navigateToEntry(entryId: string): void {
-    this.router.navigate(['/MaddeDetay', entryId]);
-  }
-
-  getEntryUrl(entry: Entry): string {
-    return `/MaddeDetay/${entry.id}`;
-  }
-
-  // Helper methods
-  getSelectedLetterCount(): number {
-    const letterObj = this.turkishAlphabet.find(l => l.letter === this.selectedLetter);
-    return letterObj ? letterObj.count : 0;
-  }
-
-  getSelectedLetterName(): string {
-    if (this.selectedLetter === '#') {
-      return 'Sayılar ve Semboller';
+  getEntryCount(letter: string): number {
+    if (letter === 'Tümü') {
+      return this.entries.length;
+    } else if (letter === '#') {
+      return this.entries.filter(entry =>
+        /^[0-9]/.test(entry.title.charAt(0))
+      ).length;
+    } else {
+      return this.entries.filter(entry =>
+        entry.title.toLocaleUpperCase('tr-TR').startsWith(letter)
+      ).length;
     }
-    return `${this.selectedLetter} Harfi`;
   }
 
-  // Madde kategorisi badge rengi
+  navigateToEntry(entry: Entry): void {
+    this.router.navigate(['/entry-detail', entry.id]);
+  }
+
+
+  getEntryImage(entry: Entry): string {
+    // Eğer entry.id ile resim yoksa veya entry.image yoksa default resim
+    return entry.id
+      ? `assets/images/entries/${entry.id}.jpg`
+      : 'assets/images/entries/default.jpg';
+  }
+
+// Hata durumunda fallback resim
+  onImageError(event: Event): void {
+    const target = event.target as HTMLImageElement;
+    target.src = 'assets/images/entries/default.jpg';
+  }
+
+
+  // getEntryImage(entry: Entry): string {
+  //   return `assets/images/entries/${entry.id}.jpg`;
+  // }
+  //
+  // onImageError(event: Event): void {
+  //   const target = event.target as HTMLImageElement;
+  //   target.src = 'assets/images/entries/default.jpg';
+  // }
+
   getCategoryBadgeClass(entry: Entry): string {
-    // İlk kategori ID'sine göre renk belirleme
     const categoryId = entry.categoryIds?.[0];
     if (!categoryId) return 'bg-gray';
 
@@ -356,30 +238,75 @@ export class EntriesComponent implements OnInit {
     return colorMap[categoryId] || 'bg-gray';
   }
 
-  // Arama önerisi için
-  onSearchInput(): void {
-    if (this.searchTerm.length >= 2) {
-      // Debounce için setTimeout kullanılabilir
-      this.performSearch();
-    } else if (this.searchTerm.length === 0) {
-      this.clearSearch();
-    }
-  }
+  // getAuthorsText(entry: Entry): string {
+  //   if (!entry.authorships || entry.authorships.length === 0) {
+  //     return 'Bilinmeyen Yazar';
+  //   }
+  //
+  //   if (entry.authorships.length === 1) {
+  //     return `${entry.authorships[0].authorId}`;
+  //   } else {
+  //     return `${entry.authorships[0].authorId} ve ${entry.authorships.length - 1} diğerleri`;
+  //   }
+  // }
 
-  // Yazar metni oluştur
+
+
+
+
   getAuthorsText(entry: Entry): string {
-    if (!entry.authorships || entry.authorships.length === 0) {
-      return 'Bilinmeyen Yazar';
-    }
+    const authorships = entry.authorships || [];
+    if (authorships.length === 0) return 'Bilinmeyen Yazar';
 
-    // Sadece ilk yazarı göster, birden fazla varsa "ve diğerleri" ekle
-    if (entry.authorships.length === 1) {
-      return `Yazar: ${entry.authorships[0].authorId}`;
-    } else {
-      return `${entry.authorships[0].authorId} ve ${entry.authorships.length - 1} diğerleri`;
+    const firstAuthor = this.authorsMap[authorships[0].authorId];
+    const firstAuthorName = firstAuthor?.fullName || 'Bilinmeyen Yazar';
+
+    if (authorships.length === 1) return firstAuthorName;
+    return `${firstAuthorName} ve ${authorships.length - 1} diğerleri`;
+  }
+
+
+
+
+
+
+  // Pagination methods
+  getPaginatedEntries(): Entry[] {
+    const startIndex = (this.currentPage - 1) * this.entriesPerPage;
+    const endIndex = startIndex + this.entriesPerPage;
+    return this.filteredEntries.slice(startIndex, endIndex);
+  }
+
+  getTotalPages(): number {
+    return Math.ceil(this.totalEntries / this.entriesPerPage);
+  }
+
+  changePage(page: number): void {
+    if (page >= 1 && page <= this.getTotalPages()) {
+      this.currentPage = page;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 
-  // Math helper for template
+  getPageNumbers(): number[] {
+    const totalPages = this.getTotalPages();
+    const pages: number[] = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage < maxVisiblePages - 1) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i);
+    }
+
+    return pages;
+  }
+
+  // Helper method for template
   Math = Math;
 }

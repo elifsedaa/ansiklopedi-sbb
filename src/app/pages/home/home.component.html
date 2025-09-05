@@ -42,27 +42,57 @@
   </div>
 </section>
 
-<!-- Categories Section -->
+<!--&lt;!&ndash; Categories Section &ndash;&gt;-->
+<!--<section class="categories-section">-->
+<!--  <div class="container">-->
+<!--    <div class="section-header">-->
+<!--      <h3>Kategoriler</h3>-->
+<!--    </div>-->
+<!--    <div class="categories-grid">-->
+<!--      <div-->
+<!--        class="category-button"-->
+<!--        *ngFor="let category of featuredCategories"-->
+<!--        (click)="navigateToCategory(category.id)">-->
+<!--        <p-button-->
+<!--          [label]="category.name"-->
+<!--          class="category-btn p-button-outlined p-button-lg"-->
+<!--          [pTooltip]="category.description"-->
+<!--          tooltipPosition="top">-->
+<!--        </p-button>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
+
+
+
 <section class="categories-section">
   <div class="container">
     <div class="section-header">
-      <h3>Kategoriler</h3>
+      <h3>Popüler Kategoriler</h3>
     </div>
     <div class="categories-grid">
       <div
-        class="category-button"
-        *ngFor="let category of featuredCategories"
-        (click)="navigateToCategory(category.id)">
-        <p-button
-          [label]="category.name"
-          class="category-btn p-button-outlined p-button-lg"
-          [pTooltip]="category.description"
-          tooltipPosition="top">
-        </p-button>
+        class="category-card"
+        *ngFor="let category of featuredCategories; let i = index"
+        (click)="navigateToCategory(category.id)"
+        [style.animation-delay.ms]="i * 100">
+
+        <div class="category-icon">
+          <i [class]="getCategoryIcon(category.id)"></i>
+        </div>
+
+        <h4 class="category-title">{{category.name}}</h4>
+
+        <p class="category-description">
+          {{category.description}}
+        </p>
       </div>
     </div>
   </div>
 </section>
+
+
 
 <!-- Featured Entries Section -->
 <section class="featured-entries">

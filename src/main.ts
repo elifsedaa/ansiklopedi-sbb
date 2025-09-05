@@ -14,9 +14,10 @@ bootstrapApplication(AppComponent, {
       FormsModule,
       ReactiveFormsModule,
       HttpClientModule,
-      RouterModule.forRoot(routes)
+      RouterModule.forRoot(routes, {
+        scrollPositionRestoration: 'top', // Her sayfa geçişinde en üste git
+        anchorScrolling: 'enabled'         // Anchor linkler için (isteğe bağlı)
+      })
     )
   ]
 }).catch(err => console.error(err));
-
-

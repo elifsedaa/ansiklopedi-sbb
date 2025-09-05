@@ -6,6 +6,8 @@ import { CardModule } from 'primeng/card';
 import { TooltipModule } from 'primeng/tooltip';
 import { HomeDataService } from '../../services/home-data.service';
 import { Category, Entry, Author, Volume } from '../../models';
+import { CategoryService } from '../../services/category.service';
+
 
 interface Stats {
   totalEntries: number;
@@ -41,7 +43,9 @@ export class HomeComponent implements OnInit {
 
   constructor(
     public router: Router,
-    private homeService: HomeDataService
+    private homeService: HomeDataService,
+    private categoryService: CategoryService // Yeni eklenen
+
   ) {}
 
   ngOnInit(): void {
@@ -49,11 +53,23 @@ export class HomeComponent implements OnInit {
   }
 
   loadData(): void {
-    // Kategorileri yükle
-    this.homeService.getCategories().subscribe(categories => {
-      this.featuredCategories = categories;
-      this.stats.totalCategories = categories.length;
+    // // Kategorileri yükle
+    // this.homeService.getCategories().subscribe(categories => {
+    //   this.featuredCategories = categories;
+    //   this.stats.totalCategories = categories.length;
+    // });
+
+    this.categoryService.getAll().subscribe({
+      next: (categories) => {
+        this.featuredCategories = categories.slice(0, 6); // İlk 6 kategoriyi al
+        this.stats.totalCategories = categories.length;
+      },
+      error: (error) => {
+        console.error('Kategoriler yüklenirken hata:', error);
+      }
     });
+
+
 
     // En popüler maddeleri yükle (görüntülenme + beğeni sayısına göre)
     this.homeService.getEntries().subscribe(entries => {
@@ -99,6 +115,41 @@ export class HomeComponent implements OnInit {
       this.stats.totalVolumes = volumes.length;
     });
   }
+  getCategoryIcon(categoryIdOrName: string): string {
+    // Senin JSON'undaki kategorilere uygun ikon haritası
+    const iconMap: { [key: string]: string } = {
+      'cat_tarih': 'fas fa-scroll',
+      'tarih': 'fas fa-scroll',
+      'cat_mimari': 'fas fa-building',
+      'mimari': 'fas fa-building',
+      'cat_turizm': 'fas fa-map-marked-alt',
+      'turizm': 'fas fa-map-marked-alt',
+      'cat_doga': 'fas fa-leaf',
+      'doga': 'fas fa-leaf',
+      'doğa': 'fas fa-leaf',
+      'cat_cografya': 'fas fa-globe-europe',
+      'cografya': 'fas fa-globe-europe',
+      'coğrafya': 'fas fa-globe-europe'
+    };
+
+    // Kategori ID'si veya adına göre ikon döndür
+    const key = categoryIdOrName.toString().toLowerCase();
+
+    // Türkçe karakterleri normalize et
+    const normalizedKey = key
+      .replace(/ğ/g, 'g')
+      .replace(/ü/g, 'u')
+      .replace(/ş/g, 's')
+      .replace(/ı/g, 'i')
+      .replace(/ö/g, 'o')
+      .replace(/ç/g, 'c');
+
+    return iconMap[key] ||
+      iconMap[normalizedKey] ||
+      'fas fa-folder-open'; // Varsayılan ikon
+  }
+
+
 
 
   getAuthorImage(author: Author): string {
@@ -110,26 +161,26 @@ export class HomeComponent implements OnInit {
     target.src = 'assets/images/authors/default.png';
   }
 
-  // Navigation methods - Kocaeli ansiklopedisi benzeri URL yapısı
+
   navigateToCategory(categoryId: string): void {
-    // /entries?category=categoryId şeklinde yönlendirme
     this.router.navigate(['/entries'], {
       queryParams: { category: categoryId }
     });
   }
 
   navigateToEntry(entryId: string): void {
-    // Kocaeli ansiklopedisi benzeri: /MaddeDetay/entryId
-    this.router.navigate(['/MaddeDetay', entryId]);
+    this.router.navigate(['/entry-detail', entryId]);
   }
 
   navigateToAuthor(authorId: string): void {
-    // /YazarDetay/authorId şeklinde yönlendirme
-    this.router.navigate(['/YazarDetay', authorId]);
+    this.router.navigate(['/author-detail', authorId]);
   }
 
+
+    // Volume detail sayfası eklenecek.
+
   navigateToVolume(volumeId: string): void {
-    // /CiltDetay/volumeId şeklinde yönlendirme
-    this.router.navigate(['/CiltDetay', volumeId]);
+    // this.router.navigate(['/volume-detail', volumeId]);
+    console.log('Volume detail sayfası henüz tanımlanmamış:', volumeId);
   }
 }

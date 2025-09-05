@@ -1,0 +1,162 @@
+<div class="author-detail-page">
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="pi pi-spin pi-spinner"></i>
+      <p>Yazar bilgileri yükleniyor...</p>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div *ngIf="!loading && author" class="main-content">
+    <!-- Breadcrumb -->
+    <div class="breadcrumb-container">
+      <div class="container">
+        <p-breadcrumb [model]="breadcrumbItems" [home]="home" class="custom-breadcrumb"></p-breadcrumb>
+      </div>
+    </div>
+
+    <!-- Author Header -->
+    <div class="author-header">
+      <div class="container">
+        <div class="author-header-content">
+          <div class="author-image-container">
+            <img
+              [src]="getAuthorImage()"
+              [alt]="author.fullName"
+              (error)="onImageError($event)"
+              class="author-image">
+            <div class="image-overlay"></div>
+          </div>
+
+          <div class="author-info">
+            <h1 class="author-name">{{ author.fullName }}</h1>
+            <div class="author-meta">
+              <p class="author-bio">{{ author.bio }}</p>
+              <p class="author-affiliation">
+                <i class="pi pi-building"></i>
+                {{ author.affiliation }}
+              </p>
+            </div>
+
+            <!-- Statistics Cards -->
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">{{ totalEntries }}</div>
+                <div class="stat-label">Madde</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ totalViews }}</div>
+                <div class="stat-label">Görüntüleme</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">{{ totalLikes }}</div>
+                <div class="stat-label">Beğeni</div>
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="categories-section" *ngIf="categoriesUsed.length > 0">
+              <h4>Uzmanlık Alanları</h4>
+              <div class="categories-chips">
+                <p-chip
+                  *ngFor="let category of categoriesUsed"
+                  [label]="category"
+                  styleClass="category-chip">
+                </p-chip>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Entries Section -->
+    <div class="entries-section">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title">{{ author.fullName }} Maddeleri</h2>
+          <p class="section-subtitle">
+            Bu yazar tarafından kaleme alınan {{ totalEntries }} madde
+          </p>
+        </div>
+
+        <!-- No Entries Message -->
+        <div *ngIf="authorEntries.length === 0" class="no-entries">
+          <i class="pi pi-info-circle"></i>
+          <h3>Henüz Madde Bulunmuyor</h3>
+          <p>Bu yazar henüz hiçbir madde yazmamış.</p>
+        </div>
+
+        <!-- Entries Grid -->
+        <div *ngIf="authorEntries.length > 0" class="entries-grid">
+          <div
+            *ngFor="let entry of authorEntries; trackBy: trackByEntryId"
+            class="entry-card"
+            (click)="navigateToEntry(entry)">
+
+            <div class="entry-header">
+              <div class="entry-number">
+                Madde No: {{ entry.maddeNo }}
+              </div>
+              <div class="entry-volume">
+                {{ getVolumeName(entry.volume.volumeId) }}
+              </div>
+            </div>
+
+            <div class="entry-content">
+              <h3 class="entry-title">{{ entry.title }}</h3>
+              <p class="entry-summary">{{ entry.summary }}</p>
+
+              <div class="entry-meta">
+                <div class="entry-categories">
+                  <span
+                    *ngFor="let catId of entry.categoryIds.slice(0, 2)"
+                    class="category-tag">
+                    {{ getCategoryName(catId) }}
+                  </span>
+                  <span *ngIf="entry.categoryIds.length > 2" class="more-categories">
+                    +{{ entry.categoryIds.length - 2 }}
+                  </span>
+                </div>
+
+                <div class="entry-period" *ngIf="getEntryPeriod(entry)">
+                  <i class="pi pi-calendar"></i>
+                  {{ getEntryPeriod(entry) }}
+                </div>
+              </div>
+
+              <div class="entry-stats">
+                <div class="stat">
+                  <i class="pi pi-eye"></i>
+                  {{ entry.stats.viewCount }}
+                </div>
+                <div class="stat">
+                  <i class="pi pi-heart"></i>
+                  {{ entry.stats.likeCount }}
+                </div>
+                <div class="pages">
+                  Sayfa {{ entry.volume.pageStart }}-{{ entry.volume.pageEnd }}
+                </div>
+              </div>
+            </div>
+
+            <div class="entry-overlay">
+              <i class="pi pi-arrow-right"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- Back Button -->
+        <div class="action-buttons">
+          <p-button
+            label="Yazarlara Dön"
+            icon="pi pi-arrow-left"
+            styleClass="p-button-outlined"
+            (onClick)="goBackToAuthors()">
+          </p-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

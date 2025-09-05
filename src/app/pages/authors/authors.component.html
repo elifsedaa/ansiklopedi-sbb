@@ -1,16 +1,80 @@
-<div class="authors-section">
-  <div class="authors-grid">
-    <div class="author-card" *ngFor="let author of authors">
-      <div class="author-image">
-        <img
-          [src]="getAuthorImage(author)"
-          (error)="onImageError($event)"
-          [alt]="author.fullName">
+<!--<div class="authors-section">-->
+<!--  <div class="authors-grid">-->
+<!--    <div class="author-card" *ngFor="let author of authors">-->
+<!--      <div class="author-image">-->
+<!--        <img-->
+<!--          [src]="getAuthorImage(author)"-->
+<!--          (error)="onImageError($event)"-->
+<!--          [alt]="author.fullName">-->
+<!--      </div>-->
+<!--      <div class="author-info">-->
+<!--        <h4>{{ author.fullName }}</h4>-->
+<!--        <p class="author-bio">{{ author.bio }}</p>-->
+<!--        <p class="author-affiliation">{{ author.affiliation }}</p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+
+<div class="authors-page">
+  <div class="breadcrumb-container">
+    <div class="container">
+      <p-breadcrumb [model]="breadcrumbItems" [home]="home" class="custom-breadcrumb"></p-breadcrumb>
+    </div>
+  </div>
+
+
+  <!-- Alphabet Filter -->
+  <div class="alphabet-filter">
+    <div class="container">
+      <div class="alphabet-grid">
+        <button
+          *ngFor="let letter of alphabet"
+          class="alphabet-btn"
+          [class.active]="selectedLetter === letter"
+          [class.has-authors]="getAuthorCount(letter) > 0"
+          (click)="filterByLetter(letter)"
+          [title]="letter === 'Tümü' ? 'Tüm yazarlar' : letter + ' harfi ile başlayan yazarlar'">
+          {{ letter }}
+          <span class="count" *ngIf="getAuthorCount(letter) > 0">({{ getAuthorCount(letter) }})</span>
+        </button>
       </div>
-      <div class="author-info">
-        <h4>{{ author.fullName }}</h4>
-        <p class="author-bio">{{ author.bio }}</p>
-        <p class="author-affiliation">{{ author.affiliation }}</p>
+    </div>
+  </div>
+
+  <!-- Authors Grid -->
+  <div class="authors-section">
+    <div class="container">
+      <div class="authors-grid">
+        <div
+          class="author-card"
+          *ngFor="let author of filteredAuthors"
+          (click)="navigateToAuthorDetail(author)">
+          <div class="author-image">
+            <img
+              [src]="getAuthorImage(author)"
+              (error)="onImageError($event)"
+              [alt]="author.fullName">
+          </div>
+          <div class="author-info">
+            <h4 class="author-name">{{ author.fullName }}</h4>
+            <p class="author-bio">{{ author.bio }}</p>
+            <p class="author-affiliation">{{ author.affiliation }}</p>
+          </div>
+          <div class="author-overlay">
+            <i class="pi pi-eye"></i>
+            <span>Detayları Görüntüle</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- No Results Message -->
+      <div class="no-results" *ngIf="filteredAuthors.length === 0">
+        <i class="pi pi-info-circle"></i>
+        <h3>Sonuç Bulunamadı</h3>
+        <p>{{ selectedLetter }} harfi ile başlayan yazar bulunamadı.</p>
       </div>
     </div>
   </div>

@@ -14,7 +14,7 @@ export const routes: Routes = [
       {
         path: 'entries',
         loadComponent: () => import('./pages/entries/entries.component').then(m => m.EntriesComponent),
-        title: 'A-Z Maddeler - Sakarya Ansiklopedisi'
+        title: 'Maddeler - Sakarya Ansiklopedisi'
       },
       {
         path: 'publications',
@@ -36,6 +36,16 @@ export const routes: Routes = [
         loadComponent: () => import('./pages/add-publication/add-publication.component').then(m => m.AddPublicationComponent),
         title: 'Yayın Ekle - Sakarya Ansiklopedisi'
       },
+      {
+        path: 'author-detail/:id',
+        loadComponent: () => import('./pages/author-detail/author-detail.component').then(m => m.AuthorDetailComponent),
+        title: 'Yazar Detay - Sakarya Ansiklopedisi'
+      },
+      {
+        path: 'entry-detail/:id',
+        loadComponent: () => import('./pages/entry-detail/entry-detail.component').then(m => m.EntryDetailComponent),
+        title: 'Madde Detay - Sakarya Ansiklopedisi'
+      }
       // diğer sayfalar buraya children olarak eklenecek
     ]
   },
