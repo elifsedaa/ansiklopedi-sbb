@@ -72,14 +72,18 @@ body {
   }
 }
 
+
+
 // Header Styles
 .header-main {
-  background: linear-gradient(135deg, $secondary-color 0%, $primary-color 100%);
-  color: $white;
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+  color: #ffffff;
   padding: 1rem 0;
-  box-shadow: 0 4px 20px $shadow-medium;
-  position: sticky;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  position: fixed;   /* sticky yerine fixed */
   top: 0;
+  left: 0;
+  width: 100%;       /* full width olması için */
   z-index: 1000;
 
   .header-content {
@@ -105,6 +109,7 @@ body {
       width: auto;
       filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
     }
+
 
     //.title-section {
     //  h1 {
@@ -1203,3 +1208,115 @@ body {
 
 ///////////////////////////////
 
+/* Tüm sayfa yüksekliği */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // ekran yüksekliği kadar
+}
+
+/* İçerik footer dışında kalan alanı kaplasın */
+.content-wrap {
+  flex: 1; // boş alanı doldurur, footer her zaman altta
+}
+
+/* Footer stilini isteğe göre */
+app-footer {
+  background-color: #1f2937; // örnek koyu renk
+  color: #fff;
+  padding: 2rem;
+}
+
+/* Body ve app-root sıfır margin/padding */
+html, body, app-root {
+  height: 100%;
+  margin: 0;
+}
+
+/* page-container tüm sayfayı kaplasın */
+.page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; // ekran yüksekliği kadar
+}
+
+/* content-wrap footer dışında kalan alanı kaplasın */
+.content-wrap {
+  flex: 1; // boş alanı doldurur, footer aşağıda kalır
+}
+
+/* footer stilini isteğe göre */
+.footer, app-footer {
+  flex-shrink: 0;  // footer küçülmesin
+  background: #2c3e50;
+  color: #ffffff;
+  padding: 3rem 1rem;
+  text-align: center;
+}
+.footer {
+  flex-shrink: 0;
+  background: #2c3e50;
+  color: #ffffff;
+  padding: 3rem 1rem;
+  text-align: center;
+  margin-top: auto; // Bu satırı ekleyin
+}
+
+// Breadcrumb Global Styles
+.breadcrumb-container {
+  background: white;
+  border-bottom: 1px solid var(--border-color, #2b66b5);
+  padding: 1rem 0;
+  margin-top: 0.75rem;
+
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+
+  ::ng-deep .custom-breadcrumb {
+    .p-breadcrumb {
+      background: transparent;
+      border: none;
+      padding: 0;
+
+      .p-breadcrumb-list {
+        align-items: center;
+        font-size: 1.1rem;
+        font-weight: 500;
+
+        .p-menuitem-link {
+          color: var(--primary-color, #2563eb);
+          text-decoration: none;
+          transition: color 0.3s ease;
+
+          &:hover {
+            color: var(--primary-dark, #1d4ed8);
+          }
+
+          .p-menuitem-text {
+            color: inherit;
+          }
+        }
+
+        .p-breadcrumb-separator {
+          color: var(--secondary-color, #64748b);
+          margin: 0 0.75rem;
+          font-size: 1.2rem;
+        }
+
+        .p-menuitem:last-child .p-menuitem-text {
+          color: var(--primary-color, #2563eb);
+          font-weight: 600;
+        }
+      }
+    }
+  }
+}
+
+// Son item'ı mavi ve kalın yapmak için
+::ng-deep .custom-breadcrumb .p-breadcrumb-list li:last-child .p-menuitem-text {
+  color: var(--primary-color, #2563eb) !important;
+  font-weight: 700 !important;
+}

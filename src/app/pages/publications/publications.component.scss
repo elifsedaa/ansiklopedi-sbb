@@ -1,8 +1,9 @@
 
 // publications.component.scss
 .publications-page {
-  padding: 40px 0;
-  min-height: calc(100vh - 200px);
+  padding: 0;
+  //min-height: calc(100vh - 200px);
+  flex: 1;
 
   .page-header {
     text-align: center;

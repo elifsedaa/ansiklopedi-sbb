@@ -1,55 +1,81 @@
-<footer class="footer">
+<div class="footer">
   <div class="container">
-    <div class="footer-content">
-      <!-- Sütun 1 -->
-      <div class="footer-section">
-        <h5>Sakarya Büyükşehir Belediyesi</h5>
-        <ul class="footer-links">
-          <li>Bilgi Hattı</li>
-          <li>Kullanım Kılavuzu</li>
-          <li>Kullanım Koşulları</li>
-        </ul>
+    <div class="socials">
+      <div class="download">
+        <img src="assets/image/google-play.png" alt="Google Play">
+        <img src="assets/image/app-store.png" alt="App Store">
       </div>
-
-      <!-- Sütun 2 -->
-      <div class="footer-section">
-        <h5>Diğer Platformlarımız</h5>
-        <ul class="footer-links">
-          <li><a href="https://www.sakarya.bel.tr" target="_blank">Kurumsal Sitemiz</a></li>
-          <li>Saski</li>
-          <li>Belpaş</li>
-          <li>Fidan A.Ş</li>
-          <li>Sera A.Ş</li>
-        </ul>
-      </div>
-
-      <!-- Sütun 3 -->
-      <div class="footer-section">
-        <h5>Hızlı Erişim</h5>
-        <ul class="footer-links">
-          <li><a routerLink="/entries">Maddeler</a></li>
-          <li><a routerLink="/authors">Yazarlar</a></li>
-          <li><a routerLink="/volumes">Ciltler</a></li>
-          <li><a routerLink="/suggestions">Öneriler</a></li>
-        </ul>
-      </div>
-
-      <!-- Sütun 4 -->
-      <div class="footer-section">
-        <h5>İletişim</h5>
-        <ul class="footer-links">
-          <li>Kavaklar Caddesi No:7 54100 Adapazarı/SAKARYA</li>
-          <li>iletisim:sakarya.bel.tr</li>
-          <li>44 44 054</li>
-          <li>0264 289 30 00</li>
-        </ul>
+      <div class="social-links">
+        <a *ngFor="let social of sbbSocial" [href]="social.url" target="_blank" [attr.aria-label]="social.name">
+          <i [class]="social.icon"></i>
+        </a>
       </div>
     </div>
 
-    <!-- Footer alt bilgi -->
-    <div class="footer-bottom">
-      <p>© 2025 Sakarya Büyükşehir Belediyesi. Tüm hakları saklıdır.</p>
-      <p>Bilgi İşlem Dairesi Başkanlığı | Yazılım Şube Müdürlüğü</p>
+    <div class="row text-row">
+      <!-- Sol köşe - Logo ve açıklama -->
+      <div class="col-md-3 col-sm-12">
+        <img class="sbb-logo" src="assets/image/sbb-footer-logo.png" alt="Sakarya Büyükşehir Belediyesi">
+        <p class="text-light">{{ encyclopediaInfo }}</p>
+      </div>
+
+      <!-- Diğer Platformlarımız -->
+      <div class="col-md-2 col-sm-6">
+        <p class="footer-header">Diğer Platformlarımız</p>
+        <ul class="list-unstyled">
+          <li *ngFor="let platform of platforms">
+            <a class="footer-link" [href]="platform.url" target="_blank">{{ platform.name }}</a>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Göz Atın -->
+      <div class="col-md-2 col-sm-6">
+        <p class="footer-header">Göz Atın</p>
+        <ul class="list-unstyled">
+          <li><a class="footer-link" href="https://saglik.gov.tr" target="_blank">Sağlık Bakanlığı</a></li>
+          <li><a class="footer-link" href="https://hastane.sakarya.bel.tr" target="_blank">Merkezi Hastane Randevu Sistemi</a></li>
+          <li><a class="footer-link" href="https://enabiz.gov.tr" target="_blank">E-Nabız</a></li>
+        </ul>
+      </div>
+
+      <!-- İletişim -->
+      <div class="col-md-5 col-sm-12">
+        <p class="footer-header">İletişim</p>
+        <div *ngFor="let contact of sbbContact" class="contact-link mb-2">
+          <i [class]="contact.icon" class="text-light me-2"></i>
+          <span class="text-light">{{ contact.text }}</span>
+        </div>
+      </div>
+    </div>
+
+    <hr class="text-light">
+    <div class="row">
+      <div class="col-12 text-center">
+        <p class="text-light mb-0">
+          © {{ getCurrentYear() }} Sakarya Büyükşehir Belediyesi. Tüm hakları saklıdır. |
+          <a href="/privacy-policy" class="footer-link">Gizlilik Politikası</a> |
+          <a href="/terms-of-use" class="footer-link">Kullanım Şartları</a>
+        </p>
+      </div>
     </div>
   </div>
-</footer>
+</div>
+
+<!-- Mobile Bottom Navigation -->
+<div class="bottom-nav">
+  <ul>
+    <li [routerLinkActive]="['active-bottom-nav']" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['']">
+      <a><i class="fa-solid fa-house"></i>Ana Sayfa</a>
+    </li>
+    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/volumes']">
+      <a><i class="fa-solid fa-book"></i>Ciltler</a>
+    </li>
+    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/categories']">
+      <a><i class="fa-solid fa-list"></i>Kategoriler</a>
+    </li>
+    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/search']">
+      <a><i class="fa-solid fa-search"></i>Arama</a>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,27 @@
+.main-nav {
+  display: flex;
+  justify-content: center;   // Ortada durur
+  align-items: center;       // Dikey ortalama
+  height: 60px;              // Yükseklik belirleyelim (isteğe göre değiştir)
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1); // Hafif gölge
+
+  ul {
+    list-style: none;
+    display: flex;
+    gap: 2rem;                // Menü öğeleri arası boşluk
+    margin: 0;                // Varsayılan yukarı boşluğu sıfırla
+    padding: 0;
+  }
+
+  li a {
+    text-decoration: none;
+    font-weight: 500;
+    color: #efefef;
+    transition: color 0.3s ease;
+
+    &:hover,
+    &.active {
+      color: #9dc2f4; // Aktif veya hover rengi
+    }
+  }
+}

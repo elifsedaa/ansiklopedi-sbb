@@ -268,7 +268,7 @@ body {
   }
 }
 
-// Search overlay
+// SearchComponent overlay
 .search-overlay {
   position: fixed;
   top: 0;
@@ -352,8 +352,9 @@ body {
 
 // Main content
 .main-content {
-  min-height: calc(100vh - 200px);
-  padding-bottom: 40px;
+  //min-height: calc(100vh - 200px);
+  //padding-bottom: 40px;
+  flex: 1;
 }
 
 // FooterComponent styles
@@ -482,6 +483,9 @@ body {
     }
   }
 }
+
+
+
 
 // Responsive design
 @media (max-width: 768px) {

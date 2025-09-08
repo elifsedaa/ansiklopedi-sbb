@@ -82,7 +82,7 @@
   }
 }
 
-// Search Section - Mavi tonlu ve görünür
+// SearchComponent Section - Mavi tonlu ve görünür
 .search-section {
   background: var(--background-white);
   padding: 2rem 0;
@@ -184,7 +184,7 @@
   padding: 2rem 0;
   border-bottom: 2px solid var(--border-color);
   position: sticky;
-  top: 0;
+  //top: 0;
   z-index: 100;
   box-shadow: 0 4px 12px rgba(30, 64, 175, 0.1);
 

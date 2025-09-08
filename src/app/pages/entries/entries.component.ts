@@ -109,7 +109,7 @@ export class EntriesComponent implements OnInit {
   // URL temizleme sorunu düzeltildi
   filterByLetter(letter: string): void {
     this.selectedLetter = letter;
-    this.searchTerm = ''; // Search term'i temizle
+    this.searchTerm = ''; // SearchComponent term'i temizle
     this.currentPage = 1;
 
     if (letter === 'Tümü') {

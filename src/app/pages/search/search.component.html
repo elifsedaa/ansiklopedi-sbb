@@ -1,0 +1,151 @@
+<div class="search-results">
+  <div class="container">
+    <!-- Search Header -->
+    <div class="search-header">
+      <h1 class="search-title">Arama Sonuçları</h1>
+      <div class="search-info" *ngIf="searchTerm">
+        <p><strong>"{{searchTerm}}"</strong> için <strong>{{totalResults}}</strong> sonuç bulundu</p>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div class="loading" *ngIf="loading">
+      <i class="pi pi-spinner pi-spin"></i>
+      <span>Aranıyor...</span>
+    </div>
+
+    <!-- No Results -->
+    <div class="no-results" *ngIf="!loading && totalResults === 0 && searchTerm">
+      <div class="no-results-content">
+        <i class="pi pi-search"></i>
+        <h3>Sonuç bulunamadı</h3>
+        <p>"{{searchTerm}}" için herhangi bir sonuç bulunamadı.</p>
+        <div class="search-suggestions">
+          <h4>Arama önerileri:</h4>
+          <ul>
+            <li>Farklı anahtar kelimeler deneyin</li>
+            <li>Daha genel terimler kullanın</li>
+            <li>Yazım hatası olup olmadığını kontrol edin</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div class="results-container" *ngIf="!loading && totalResults > 0">
+
+      <!-- Filter Tabs -->
+      <div class="filter-tabs">
+        <button
+          class="filter-tab"
+          [class.active]="activeFilter === 'all'"
+          (click)="setFilter('all')">
+          Tümü ({{totalResults}})
+        </button>
+        <button
+          class="filter-tab"
+          [class.active]="activeFilter === 'entries'"
+          (click)="setFilter('entries')"
+          *ngIf="entryResults.length > 0">
+          Maddeler ({{entryResults.length}})
+        </button>
+        <button
+          class="filter-tab"
+          [class.active]="activeFilter === 'authors'"
+          (click)="setFilter('authors')"
+          *ngIf="authorResults.length > 0">
+          Yazarlar ({{authorResults.length}})
+        </button>
+      </div>
+
+      <!-- Entry Results -->
+      <div class="results-section" *ngIf="shouldShowEntries()">
+        <h3 class="section-title" *ngIf="activeFilter === 'all'">
+          <i class="pi pi-book"></i>
+          Maddeler ({{entryResults.length}})
+        </h3>
+
+        <div class="entry-results">
+          <div class="entry-card" *ngFor="let entry of getDisplayedEntries()">
+            <div class="entry-header">
+              <h4 class="entry-title">
+                <a [routerLink]="['/entry-detail', entry.id]" [innerHTML]="highlightText(entry.title)"></a>
+              </h4>
+              <span class="entry-number">Madde No: {{entry.maddeNo}}</span>
+            </div>
+
+            <div class="entry-meta">
+              <span class="entry-categories">
+                <i class="pi pi-tags"></i>
+                <span *ngFor="let categoryId of entry.categoryIds; let last = last">
+                  {{getCategoryName(categoryId)}}<span *ngIf="!last">, </span>
+                </span>
+              </span>
+              <span class="entry-author" *ngIf="getEntryAuthor(entry)">
+                <i class="pi pi-user"></i>
+                {{getEntryAuthor(entry)}}
+              </span>
+            </div>
+
+            <p class="entry-summary" [innerHTML]="highlightText(entry.summary)"></p>
+
+            <div class="entry-location" *ngIf="entry.places && entry.places.length > 0">
+              <i class="pi pi-map-marker"></i>
+              <span>{{entry.places[0].name}}, {{entry.places[0].admin?.ilce}}</span>
+            </div>
+
+            <div class="entry-stats">
+              <span class="stat">
+                <i class="pi pi-eye"></i>
+                {{entry.stats?.viewCount || 0}} görüntüleme
+              </span>
+              <span class="stat">
+                <i class="pi pi-heart"></i>
+                {{entry.stats?.likeCount || 0}} beğeni
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Show More Button for Entries -->
+        <div class="show-more" *ngIf="shouldShowMoreEntriesButton()">
+          <button class="show-more-btn" (click)="showMoreEntries()">
+            Daha fazla madde göster ({{entryResults.length - displayedEntriesCount}} kaldı)
+          </button>
+        </div>
+      </div>
+
+      <!-- Author Results -->
+      <div class="results-section" *ngIf="shouldShowAuthors()">
+        <h3 class="section-title" *ngIf="activeFilter === 'all'">
+          <i class="pi pi-users"></i>
+          Yazarlar ({{authorResults.length}})
+        </h3>
+
+        <div class="author-results">
+          <div class="author-card" *ngFor="let author of getDisplayedAuthors()">
+            <div class="author-info">
+              <div class="author-avatar">
+                <i class="pi pi-user"></i>
+              </div>
+              <div class="author-details">
+                <h4 class="author-name">
+                  <a [routerLink]="['/author-detail', author.id]" [innerHTML]="highlightText(author.fullName)"></a>
+                </h4>
+                <p class="author-bio" [innerHTML]="highlightText(author.bio)"></p>
+                <span class="author-affiliation">{{author.affiliation}}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Show More Button for Authors -->
+        <div class="show-more" *ngIf="shouldShowMoreAuthorsButton()">
+          <button class="show-more-btn" (click)="showMoreAuthors()">
+            Daha fazla yazar göster ({{authorResults.length - displayedAuthorsCount}} kaldı)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

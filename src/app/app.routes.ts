@@ -17,6 +17,11 @@ export const routes: Routes = [
         title: 'Maddeler - Sakarya Ansiklopedisi'
       },
       {
+        path: 'search',
+        loadComponent: () => import('./pages/search/search.component').then(m => m.SearchComponent),
+        title: 'Arama Sonuçları - Sakarya Ansiklopedisi'
+      },
+      {
         path: 'publications',
         loadComponent: () => import('./pages/publications/publications.component').then(m => m.PublicationsComponent),
         title: 'Yayınlar - Sakarya Ansiklopedisi'

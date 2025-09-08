@@ -16,7 +16,7 @@ import { ApiService, Entry, Category } from '../../core/services/api.service';
         <p>Ansiklopedimizde yer alan tüm maddeler</p>
       </div>
 
-      <!-- Search and Filters -->
+      <!-- SearchComponent and Filters -->
       <div class="search-filters">
         <div class="search-box">
           <input
@@ -153,7 +153,7 @@ export class PublicationsComponent implements OnInit {
   paginatedEntries: Entry[] = [];
   categories: Category[] = [];
 
-  // Search and filter
+  // SearchComponent and filter
   searchQuery = '';
   selectedCategory = '';
   sortBy = 'title';
