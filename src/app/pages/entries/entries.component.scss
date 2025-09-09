@@ -243,12 +243,12 @@
 
       &:hover {
         background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
-        color: white;
+        color: blue;
         transform: translateY(-3px);
         box-shadow: 0 6px 12px rgba(30, 64, 175, 0.25);
 
         .count {
-          color: white;
+          color: black;
         }
       }
     }
@@ -256,12 +256,12 @@
     &.active {
       background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
       border-color: var(--primary-color);
-      color: white;
+      color: blue;
       transform: translateY(-3px);
       box-shadow: 0 6px 12px rgba(30, 64, 175, 0.3);
 
       .count {
-        color: white;
+        color: blue;
       }
     }
 
