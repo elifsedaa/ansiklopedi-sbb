@@ -2,20 +2,27 @@
   <div class="container">
     <div class="socials">
       <div class="download">
-        <img src="assets/image/google-play.png" alt="Google Play">
-        <img src="assets/image/app-store.png" alt="App Store">
+        <img src="assets/images/google-play.png" alt="Google Play">
+        <img src="assets/images/app-store.png" alt="App Store">
       </div>
       <div class="social-links">
-        <a *ngFor="let social of sbbSocial" [href]="social.url" target="_blank" [attr.aria-label]="social.name">
+        <a *ngFor="let social of sbbSocial"
+           [href]="social.url"
+           target="_blank"
+           [attr.aria-label]="social.name"
+           class="social-icon">
           <i [class]="social.icon"></i>
         </a>
       </div>
+
     </div>
+
+
 
     <div class="row text-row">
       <!-- Sol köşe - Logo ve açıklama -->
       <div class="col-md-3 col-sm-12">
-        <img class="sbb-logo" src="assets/image/sbb-footer-logo.png" alt="Sakarya Büyükşehir Belediyesi">
+        <img class="sbb-logo" src="assets/images/sbb-logo.svg" alt="Sakarya Büyükşehir Belediyesi">
         <p class="text-light">{{ encyclopediaInfo }}</p>
       </div>
 
@@ -29,15 +36,32 @@
         </ul>
       </div>
 
-      <!-- Göz Atın -->
+      <!-- Kısayollar -->
       <div class="col-md-2 col-sm-6">
-        <p class="footer-header">Göz Atın</p>
+        <p class="footer-header">Kısayollar</p>
         <ul class="list-unstyled">
-          <li><a class="footer-link" href="https://saglik.gov.tr" target="_blank">Sağlık Bakanlığı</a></li>
-          <li><a class="footer-link" href="https://hastane.sakarya.bel.tr" target="_blank">Merkezi Hastane Randevu Sistemi</a></li>
-          <li><a class="footer-link" href="https://enabiz.gov.tr" target="_blank">E-Nabız</a></li>
+          <li [routerLinkActive]="['active-bottom-nav']" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="footer-link" [routerLink]="['']"><i class="fa-solid fa-house me-2"></i>Ana Sayfa</a>
+          </li>
+          <li [routerLinkActive]="['active-bottom-nav']">
+            <a class="footer-link" [routerLink]="['/volumes']"><i class="fa-solid fa-book me-2"></i>Ciltler</a>
+          </li>
+          <li [routerLinkActive]="['active-bottom-nav']">
+            <a class="footer-link" [routerLink]="['/entries']"><i class="fa-solid fa-file-lines me-2"></i>Maddeler</a>
+          </li>
+          <li [routerLinkActive]="['active-bottom-nav']">
+            <a class="footer-link" [routerLink]="['/categories']"><i class="fa-solid fa-list me-2"></i>Kategoriler</a>
+          </li>
+          <li [routerLinkActive]="['active-bottom-nav']">
+            <a class="footer-link" [routerLink]="['/authors']"><i class="fa-solid fa-user-pen me-2"></i>Yazarlar</a>
+          </li>
+          <li [routerLinkActive]="['active-bottom-nav']">
+            <a class="footer-link" [routerLink]="['/search']"><i class="fa-solid fa-search me-2"></i>Arama</a>
+          </li>
         </ul>
       </div>
+
+
 
       <!-- İletişim -->
       <div class="col-md-5 col-sm-12">
@@ -62,20 +86,3 @@
   </div>
 </div>
 
-<!-- Mobile Bottom Navigation -->
-<div class="bottom-nav">
-  <ul>
-    <li [routerLinkActive]="['active-bottom-nav']" [routerLinkActiveOptions]="{ exact: true }" [routerLink]="['']">
-      <a><i class="fa-solid fa-house"></i>Ana Sayfa</a>
-    </li>
-    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/volumes']">
-      <a><i class="fa-solid fa-book"></i>Ciltler</a>
-    </li>
-    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/categories']">
-      <a><i class="fa-solid fa-list"></i>Kategoriler</a>
-    </li>
-    <li [routerLinkActive]="['active-bottom-nav']" [routerLink]="['/search']">
-      <a><i class="fa-solid fa-search"></i>Arama</a>
-    </li>
-  </ul>
-</div>

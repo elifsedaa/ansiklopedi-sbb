@@ -296,7 +296,7 @@ body {
 
   .hero-text {
     h2 {
-      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-size: clamp(1rem, 3vw, 2rem);
       font-weight: 700;
       color: $text-primary;
       margin-bottom: 1.5rem;
@@ -505,7 +505,8 @@ body {
 // AuthorsComponent Section
 .authors-section {
   @include section-spacing;
-  background: $white;
+  background: #d0def680;
+  //background: #d0def6;
 
   .authors-grid {
     display: grid;
@@ -1224,7 +1225,6 @@ body {
 app-footer {
   background-color: #1f2937; // örnek koyu renk
   color: #fff;
-  padding: 2rem;
 }
 
 /* Body ve app-root sıfır margin/padding */
@@ -1250,7 +1250,6 @@ html, body, app-root {
   flex-shrink: 0;  // footer küçülmesin
   background: #2c3e50;
   color: #ffffff;
-  padding: 3rem 1rem;
   text-align: center;
 }
 .footer {
@@ -1319,4 +1318,43 @@ html, body, app-root {
 ::ng-deep .custom-breadcrumb .p-breadcrumb-list li:last-child .p-menuitem-text {
   color: var(--primary-color, #2563eb) !important;
   font-weight: 700 !important;
+}
+
+
+
+.volumes-section .volumes-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;               // kartlar arası boşluğu biraz artırdım
+  justify-content: center;  // tüm kartları ortala
+}
+
+.volumes-section .volume-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 300px;             // kart genişliği artırıldı
+}
+
+.volumes-section .volume-card .volume-cover {
+  width: 180px;             // görsel kapsayıcı genişliği
+  height: 180px;            // kare görünüm
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.volumes-section .volume-card .volume-cover img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: cover;
+  display: block;
+  margin: auto;
+}
+
+.p-button-icon-left {
+  margin-right: 0.75rem; /* Icon ile label arasında boşluk */
 }

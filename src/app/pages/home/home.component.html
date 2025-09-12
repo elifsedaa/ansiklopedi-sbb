@@ -1,9 +1,12 @@
 <!-- Hero Section -->
 <section class="hero-section">
   <div class="container">
+    <!-- Yeni Başlık -->
+    <h1 class="hero-main-title">Sakarya Şehir Ansiklopedisi</h1>
+
     <div class="hero-content">
       <div class="hero-text">
-        <h2>Sakarya'nın Zengin Tarihini ve Kültürünü Keşfedin</h2>
+        <h2 class="hero-subtitle">Sakarya'nın Zengin Tarihini ve Kültürünü Keşfedin</h2>
         <p>
           Sakarya ili ve çevresinin tarihi, kültürel, coğrafi ve sosyal yapısını anlatan
           kapsamlı dijital ansiklopedi. Araştırmacılar, öğrenciler ve meraklılar için
@@ -41,6 +44,51 @@
     </div>
   </div>
 </section>
+
+
+<!--&lt;!&ndash; Hero Section &ndash;&gt;-->
+<!--<section class="hero-section">-->
+<!--  <div class="container">-->
+<!--    <div class="hero-content">-->
+<!--      <div class="hero-text">-->
+<!--        <h2>Sakarya'nın Zengin Tarihini ve Kültürünü Keşfedin</h2>-->
+<!--        <p>-->
+<!--          Sakarya ili ve çevresinin tarihi, kültürel, coğrafi ve sosyal yapısını anlatan-->
+<!--          kapsamlı dijital ansiklopedi. Araştırmacılar, öğrenciler ve meraklılar için-->
+<!--          hazırlanmış güvenilir bilgi kaynağı.-->
+<!--        </p>-->
+<!--        <div class="hero-buttons">-->
+<!--          <p-button-->
+<!--            label="Maddeleri Keşfet"-->
+<!--            icon="pi pi-book"-->
+<!--            class="p-button-primary"-->
+<!--            (onClick)="router.navigate(['/entries'])">-->
+<!--          </p-button>-->
+<!--          <p-button-->
+<!--            label="Yazarları İncele"-->
+<!--            icon="pi pi-users"-->
+<!--            class="p-button-outlined"-->
+<!--            (onClick)="router.navigate(['/authors'])">-->
+<!--          </p-button>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--      <div class="hero-stats">-->
+<!--        <div class="stat-item">-->
+<!--          <span class="stat-number">{{ stats.totalEntries }}</span>-->
+<!--          <span class="stat-label">Madde</span>-->
+<!--        </div>-->
+<!--        <div class="stat-item">-->
+<!--          <span class="stat-number">{{ stats.totalAuthors }}</span>-->
+<!--          <span class="stat-label">Yazar</span>-->
+<!--        </div>-->
+<!--        <div class="stat-item">-->
+<!--          <span class="stat-number">{{ stats.totalVolumes }}</span>-->
+<!--          <span class="stat-label">Cilt</span>-->
+<!--        </div>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</section>-->
 
 <!--&lt;!&ndash; Categories Section &ndash;&gt;-->
 <!--<section class="categories-section">-->
@@ -187,7 +235,7 @@
         <p-card>
           <ng-template pTemplate="header">
             <div class="volume-cover">
-              <img [src]="volume.pdfUrl ? '/assets/images/volumes/' + volume.number + '.jpg' : 'assets/images/default-volume.jpg'" [alt]="volume.title">
+              <img [src]="volume.pdfUrl ? '/assets/images/volumes/' + volume.number + '.png' : '/assets/images/volumes/default-volume.png'" [alt]="volume.title">
             </div>
           </ng-template>
 

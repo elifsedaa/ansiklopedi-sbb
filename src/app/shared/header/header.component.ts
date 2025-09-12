@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
+
 @Component({
   selector: 'app-header',
   standalone: true,
@@ -49,4 +50,8 @@ export class HeaderComponent implements OnInit {
       this.closeSearch();
     }
   }
+  goHome() {
+    this.router.navigate(['/']);
+  }
 }
+
